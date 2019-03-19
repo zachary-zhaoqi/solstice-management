@@ -2,6 +2,26 @@ import { isUrl } from '../utils/utils';
 
 const menuData = [
   {
+    name: '商品管理',
+    icon: 'profile',
+    path: 'merchandise',
+    children: [
+      {
+        name: '商品管理',
+        path: 'manage',
+      },
+      // {
+      //   name: '分步表单',
+      //   path: 'step-form',
+      // },
+      // {
+      //   name: '高级表单',
+      //   authority: 'admin',
+      //   path: 'advanced-form',
+      // },
+    ],
+  },
+  {
     name: 'dashboard',
     icon: 'dashboard',
     path: 'dashboard',

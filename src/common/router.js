@@ -1,6 +1,6 @@
-import React, { createElement } from 'react';
 import { Spin } from 'antd';
 import pathToRegexp from 'path-to-regexp';
+import React, { createElement } from 'react';
 import Loadable from 'react-loadable';
 import { getMenuData } from './menu';
 
@@ -60,10 +60,17 @@ function getFlatMenuData(menus) {
   let keys = {};
   menus.forEach(item => {
     if (item.children) {
-      keys[item.path] = { ...item };
-      keys = { ...keys, ...getFlatMenuData(item.children) };
+      keys[item.path] = {
+        ...item,
+      };
+      keys = {
+        ...keys,
+        ...getFlatMenuData(item.children),
+      };
     } else {
-      keys[item.path] = { ...item };
+      keys[item.path] = {
+        ...item,
+      };
     }
   });
   return keys;
@@ -169,6 +176,9 @@ export const getRouterData = app => {
     },
     '/user/register-result': {
       component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
+    },
+    '/merchandise/manage': {
+      component: dynamicWrapper(app, [], () => import('../routes/Merchandise/Manage')),
     },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),

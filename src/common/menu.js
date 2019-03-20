@@ -11,8 +11,8 @@ const menuData = [
         path: 'manage',
       },
       // {
-      //   name: '分步表单',
-      //   path: 'step-form',
+      //   name: '添加表单',
+      //   path: 'add-form',
       // },
       // {
       //   name: '高级表单',

@@ -180,6 +180,9 @@ export const getRouterData = app => {
     '/merchandise/manage': {
       component: dynamicWrapper(app, [], () => import('../routes/Merchandise/Manage')),
     },
+    // '/merchandise/add': {
+    //   component: dynamicWrapper(app, [], () => import('../routes/Merchandise/AddForm')),
+    // },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },

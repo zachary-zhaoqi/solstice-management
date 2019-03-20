@@ -49,25 +49,11 @@ const CreateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem
-        labelCol={{
-          span: 5,
-        }}
-        wrapperCol={{
-          span: 15,
-        }}
-        label="描述"
-      >
-        {' '}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
         {form.getFieldDecorator('desc', {
-          rules: [
-            {
-              required: true,
-              message: 'Please input some description...',
-            },
-          ],
-        })(<Input placeholder="请输入" />)}{' '}
-      </FormItem>{' '}
+          rules: [{ required: true, message: 'Please input some description...' }],
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
     </Modal>
   );
 });
@@ -97,9 +83,7 @@ export default class TableList extends PureComponent {
     const { formValues } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = {
-        ...obj,
-      };
+      const newObj = { ...obj };
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
@@ -220,58 +204,36 @@ export default class TableList extends PureComponent {
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="商品名称">
-              {' '}
-              {getFieldDecorator('no')(<Input placeholder="请输入" />)}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
+              {getFieldDecorator('no')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
-            <FormItem label="状态">
-              {' '}
+            <FormItem label="上架状态">
               {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0"> 上架 </Option> <Option value="1"> 下架 </Option>{' '}
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="0">关闭</Option>
+                  <Option value="1">运行中</Option>
                 </Select>
-              )}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
+              )}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
-                查询{' '}
-              </Button>{' '}
-              <Button
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.handleFormReset}
-              >
-                重置{' '}
-              </Button>{' '}
-              <a
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.toggleForm}
-              >
+                查询
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                重置
+              </Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                 展开 <Icon type="down" />
-              </a>{' '}
-            </span>{' '}
-          </Col>{' '}
-        </Row>{' '}
+              </a>
+            </span>
+          </Col>
+        </Row>
       </Form>
     );
   }
@@ -281,130 +243,70 @@ export default class TableList extends PureComponent {
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="商品ID">
-              {' '}
-              {getFieldDecorator('no')(<Input placeholder="请输入" />)}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
+              {getFieldDecorator('no')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
-            <FormItem label="上架状态">
-              {' '}
+            <FormItem label="产品类别">
               {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0"> 上架 </Option> <Option value="1"> 下架 </Option>{' '}
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="0">茶品</Option>
+                  <Option value="1">茶器</Option>
                 </Select>
-              )}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="商标">
+              {getFieldDecorator('status3')(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="0">玉德芳</Option>
+                  <Option value="1">孝文家茶</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="商品名称">
-              {' '}
-              {getFieldDecorator('number')(
-                <InputNumber
-                  style={{
-                    width: '100%',
-                  }}
-                />
-              )}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
-        </Row>{' '}
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
+              {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <FormItem label="更新日期">
-              {' '}
               {getFieldDecorator('date')(
-                <DatePicker
-                  style={{
-                    width: '100%',
-                  }}
-                  placeholder="请输入更新日期"
-                />
-              )}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
+                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
+              )}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
-            <FormItem label="包装规格">
-              {' '}
-              {getFieldDecorator('status3')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0"> 关闭 </Option> <Option value="1"> 运行中 </Option>{' '}
-                </Select>
-              )}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
-          <Col md={8} sm={24}>
-            <FormItem label="商品价格">
-              {' '}
+            <FormItem label="上架状态">
               {getFieldDecorator('status4')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0"> 关闭 </Option> <Option value="1"> 运行中 </Option>{' '}
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="0">上架</Option>
+                  <Option value="1">下架</Option>
                 </Select>
-              )}{' '}
-            </FormItem>{' '}
-          </Col>{' '}
-        </Row>{' '}
-        <div
-          style={{
-            overflow: 'hidden',
-          }}
-        >
-          <span
-            style={{
-              float: 'right',
-              marginBottom: 24,
-            }}
-          >
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <div style={{ overflow: 'hidden' }}>
+          <span style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">
-              查询{' '}
-            </Button>{' '}
-            <Button
-              style={{
-                marginLeft: 8,
-              }}
-              onClick={this.handleFormReset}
-            >
-              重置{' '}
-            </Button>{' '}
-            <a
-              style={{
-                marginLeft: 8,
-              }}
-              onClick={this.toggleForm}
-            >
+              查询
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+              重置
+            </Button>
+            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
               收起 <Icon type="up" />
-            </a>{' '}
-          </span>{' '}
-        </div>{' '}
+            </a>
+          </span>
+        </div>
       </Form>
     );
   }
@@ -451,10 +353,6 @@ export default class TableList extends PureComponent {
         dataIndex: 'description',
       },
       {
-        title: '商品价格',
-        dataIndex: 'description',
-      },
-      {
         title: '状态',
         dataIndex: 'status',
         filters: [
@@ -484,14 +382,15 @@ export default class TableList extends PureComponent {
         title: '更新时间',
         dataIndex: 'updatedAt',
         sorter: true,
-        render: val => <span> {moment(val).format('YYYY-MM-DD HH:mm:ss')} </span>,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
       {
         title: '操作',
         render: () => (
           <Fragment>
-            <a href=""> 修改 </a> <Divider type="vertical" />
-            <a href=""> 下架 </a>{' '}
+            <a href="">修改</a>
+            <Divider type="vertical" />
+            <a href="">删除</a>
           </Fragment>
         ),
       },
@@ -499,7 +398,8 @@ export default class TableList extends PureComponent {
 
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove"> 删除 </Menu.Item> <Menu.Item key="approval"> 批量上架 </Menu.Item>{' '}
+        <Menu.Item key="remove">删除</Menu.Item>
+        <Menu.Item key="approval">批量上架</Menu.Item>
       </Menu>
     );
 
@@ -512,22 +412,22 @@ export default class TableList extends PureComponent {
       <PageHeaderLayout title="商品管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}> {this.renderForm()} </div>{' '}
+            <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                添加新商品{' '}
-              </Button>{' '}
+                新建
+              </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button> 批量下架 </Button>{' '}
+                  <Button>批量下架</Button>
                   <Dropdown overlay={menu}>
                     <Button>
-                      批量操作 <Icon type="down" />
-                    </Button>{' '}
-                  </Dropdown>{' '}
+                      更多操作 <Icon type="down" />
+                    </Button>
+                  </Dropdown>
                 </span>
-              )}{' '}
-            </div>{' '}
+              )}
+            </div>
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
@@ -535,10 +435,10 @@ export default class TableList extends PureComponent {
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-            />{' '}
-          </div>{' '}
-        </Card>{' '}
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />{' '}
+            />
+          </div>
+        </Card>
+        <CreateForm {...parentMethods} modalVisible={modalVisible} />
       </PageHeaderLayout>
     );
   }

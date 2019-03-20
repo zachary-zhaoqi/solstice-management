@@ -10,10 +10,10 @@ const menuData = [
         name: '商品管理',
         path: 'manage',
       },
-      // {
-      //   name: '添加表单',
-      //   path: 'add-form',
-      // },
+      {
+        name: '新增商品',
+        path: 'add',
+      },
       // {
       //   name: '高级表单',
       //   authority: 'admin',

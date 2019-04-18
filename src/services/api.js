@@ -77,3 +77,13 @@ export async function fakeRegister(params) {
 export async function queryNotices() {
   return request('/api/notices');
 }
+
+// ============================================
+// 以上为虚假url
+
+export async function AccountLogin(params) {
+  return request('user/session/', {
+    method: 'POST',
+    body: params,
+  });
+}

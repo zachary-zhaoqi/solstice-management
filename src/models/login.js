@@ -1,9 +1,10 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin } from '../services/api';
+import { AccountLogin } from '../services/api';
 import { setAuthority } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 import { getPageQuery } from '../utils/utils';
+import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
 
 export default {
   namespace: 'login',
@@ -14,13 +15,22 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(AccountLogin, payload);
+      // console.log(payload);      
+      const jwt = require('jsonwebtoken');
+      // get the decoded payload ignoring signature, no secretOrPrivateKey needed
+      // const decoded = jwt.decode(response.data);
+      const decoded = jwt.decode(response.data, { complete: true });
+      // console.log(decoded.header);
+      // console.log(decoded.payload)
+
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: decoded.payload,
       });
+
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.code === 10000) {
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -62,10 +72,15 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      console.log(payload);
+      setAuthority(payload.user.userAuthority);
+      let newstatus = 'error';
+      if (payload.code === 10000) {
+        newstatus = 'ok';
+      }
       return {
         ...state,
-        status: payload.status,
+        status: newstatus,
         type: payload.type,
       };
     },

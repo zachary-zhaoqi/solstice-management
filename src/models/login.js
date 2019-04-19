@@ -4,7 +4,6 @@ import { AccountLogin } from '../services/api';
 import { setAuthority } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 import { getPageQuery } from '../utils/utils';
-import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
 
 export default {
   namespace: 'login',
@@ -15,8 +14,9 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(AccountLogin, payload);
       // console.log(payload);      
+      const response = yield call(AccountLogin, payload);
+      console.log(response);
       const jwt = require('jsonwebtoken');
       // get the decoded payload ignoring signature, no secretOrPrivateKey needed
       // const decoded = jwt.decode(response.data);
@@ -31,6 +31,11 @@ export default {
 
       // Login successfully
       if (response.code === 10000) {
+        const datetime = new Date();
+        datetime.setTime(datetime.getTime() + (30 * 24 * 60 * 60 * 1000));
+        const expires = `expires=${datetime.toGMTString()}`;
+        document.cookie = `token=${response.data};${expires}`;
+
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();

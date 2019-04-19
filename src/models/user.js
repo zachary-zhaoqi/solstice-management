@@ -16,8 +16,9 @@ export default {
         payload: response,
       });
     },
-    *fetchCurrent(_, { call, put }) {
+    *fetchCurrent({ payload }, { call, put }) {
       const response = yield call(queryCurrent);
+      console.log('user.fetchCurrent', response);
       yield put({
         type: 'saveCurrentUser',
         payload: response,
@@ -33,9 +34,10 @@ export default {
       };
     },
     saveCurrentUser(state, action) {
+      console.log('user model - reducers -saveCurrentUser', action)
       return {
         ...state,
-        currentUser: action.payload || {},
+        currentUser: action.payload.user || {},
       };
     },
     changeNotifyCount(state, action) {

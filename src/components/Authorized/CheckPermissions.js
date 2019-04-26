@@ -37,6 +37,7 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
   if (token === "") {
     return Exception;
   }
+  request(`/userinfo/userInfo?${stringify()}`);
 
   if (!authority) {
     return target;

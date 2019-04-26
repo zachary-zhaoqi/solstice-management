@@ -118,7 +118,6 @@ export default class BasicLayout extends React.PureComponent {
         isMobile: mobile,
       });
     });
-    console.log("BasicLayout componentDidMount()");
     const { dispatch } = this.props;
     let token = "";
     const name = `token=`;
@@ -129,23 +128,14 @@ export default class BasicLayout extends React.PureComponent {
         token = c.substring(name.length, c.length);
       }
     }
-    // console.log("BasicLayout componentDidMount() token", token);
-    const jwt = require('jsonwebtoken');
-    // get the decoded payload ignoring signature, no secretOrPrivateKey needed
-    // const decoded = jwt.decode(response.data);
-    const decoded = jwt.decode(token, { complete: true });
-    // console.log(decoded.header);
-    // console.log(decoded.payload)
-    // if(decoded==null){
 
-    // }
-    //未登录状态做判空处理。
-    console.log('BasicLayout-componentDidMount()-state', this.props)
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.decode(token, { complete: true });
+
     dispatch({
-      type: 'user/saveCurrentUser',
-      payload: decoded.payload,
+      type: 'user/fetchCurrent',
+      payload: decoded.payload.userinfo.id,
     });
-    console.log('BasicLayout-componentDidMount()-state', this.props)
   }
 
   componentWillUnmount() {

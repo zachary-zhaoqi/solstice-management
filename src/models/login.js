@@ -32,7 +32,7 @@ export default {
       // Login successfully
       if (response.code === 10000) {
         const datetime = new Date();
-        datetime.setTime(datetime.getTime() + (30 * 24 * 60 * 60 * 1000));
+        datetime.setTime(datetime.getTime() + (60 * 60 * 1000));
         const expires = `expires=${datetime.toGMTString()}`;
         document.cookie = `token=${response.data};${expires}`;
 

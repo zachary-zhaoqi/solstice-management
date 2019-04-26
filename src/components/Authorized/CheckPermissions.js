@@ -21,6 +21,23 @@ function isPromise(obj) {
 const checkPermissions = (authority, currentAuthority, target, Exception) => {
   // 没有判定权限.默认查看所有
   // Retirement authority, return target;
+
+  let token = "";
+  const name = `token=`;
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i += 1) {
+    const c = ca[i].trim();
+    if (c.indexOf(name) === 0) {
+      token = c.substring(name.length, c.length);
+    }
+  }
+  // const jwt = require('jsonwebtoken');
+  // const decoded = jwt.decode(token, { complete: true });
+  // console.log('checkPermissions', decoded);
+  if (token === "") {
+    return Exception;
+  }
+
   if (!authority) {
     return target;
   }

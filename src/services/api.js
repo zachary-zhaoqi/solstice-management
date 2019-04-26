@@ -82,7 +82,7 @@ export async function queryNotices() {
 // 以上为虚假url
 
 export async function AccountLogin(params) {
-  return request('user/session/', {
+  return request('userlogin/session/', {
     method: 'POST',
     body: params,
   });

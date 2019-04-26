@@ -63,6 +63,12 @@ export default {
           currentAuthority: 'guest',
         },
       });
+
+      const datetime = new Date();
+      datetime.setTime(datetime.getTime() + (-1 * 60 * 60 * 1000));
+      const expires = `expires=${datetime.toGMTString()}`;
+      document.cookie = `token='';${expires}`;
+
       reloadAuthorized();
       yield put(
         routerRedux.push({

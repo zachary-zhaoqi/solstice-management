@@ -2,6 +2,9 @@ import React from 'react';
 import PromiseRender from './PromiseRender';
 import { CURRENT } from './renderAuthorize';
 
+import request from '../../utils/request';
+import { isRegExp } from 'util';
+import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 function isPromise(obj) {
   return (
     !!obj &&
@@ -31,13 +34,24 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
       token = c.substring(name.length, c.length);
     }
   }
-  // const jwt = require('jsonwebtoken');
-  // const decoded = jwt.decode(token, { complete: true });
-  // console.log('checkPermissions', decoded);
-  if (token === "") {
+  const jwt = require('jsonwebtoken');
+  const decoded = jwt.decode(token, { complete: true });
+  if (decoded == null) {
     return Exception;
   }
-  request(`/userinfo/userInfo?${stringify()}`);
+
+  const userid = decoded.payload.userinfo.id;
+  // console.log('checkPermissions', decoded);
+  if (userid === undefined || userid === '') {
+    return Exception;
+  }
+  const response = request(`/userinfo/userInfo/${userid}`);
+  response.then((result) => {
+    if (result.code !== 10000) {
+      return Exception;
+    }
+  })
+
 
   if (!authority) {
     return target;

@@ -6,5 +6,5 @@ export async function query() {
 }
 
 export async function queryCurrent(params) {
-  return request(`/userinfo/userInfo/${stringify(params)}`);
+  return request(`/userinfo/userInfo/${params}`);
 }

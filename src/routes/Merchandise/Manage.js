@@ -24,8 +24,6 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './Manage.less';
 
-import request from '../../utils/request';
-
 const FormItem = Form.Item;
 const { Option } = Select;
 const getValue = obj =>
@@ -75,10 +73,9 @@ export default class TableList extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    request('/userinfo/userInfo/1');
-    dispatch({
-      type: 'rule/fetch',
-    });
+    // dispatch({
+    //   type: 'rule/fetch',
+    // });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {

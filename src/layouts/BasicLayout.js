@@ -245,6 +245,7 @@ export default class BasicLayout extends React.PureComponent {
           isMobile={mb}
           onCollapse={this.handleMenuCollapse}
         />
+        {console.log("BasicLayout.js currentUser",currentUser)}
         <Layout>
           <Header style={{ padding: 0 }}>
             <GlobalHeader

@@ -83,7 +83,7 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log(payload);
+      console.log(payload.userinfo.userAuthority);
       setAuthority(payload.userinfo.userAuthority);
       let newstatus = 'error';
       if (payload.code === 10000) {

@@ -35,9 +35,14 @@ export default {
     },
     saveCurrentUser(state, action) {
       console.log('user model - reducers -saveCurrentUser', action)
+      const currentUser={
+        name:action.payload.data.userName || {},
+        ...action.payload.data,
+      }
+
       return {
         ...state,
-        currentUser: action.payload.data || {},
+        currentUser,
       };
     },
     changeNotifyCount(state, action) {

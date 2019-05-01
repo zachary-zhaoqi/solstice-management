@@ -14,19 +14,13 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      // console.log(payload);      
+      console.log(payload);      
       const response = yield call(AccountLogin, payload);
-      console.log(response);
-      const jwt = require('jsonwebtoken');
-      // get the decoded payload ignoring signature, no secretOrPrivateKey needed
-      // const decoded = jwt.decode(response.data);
-      const decoded = jwt.decode(response.data, { complete: true });
-      // console.log(decoded.header);
-      // console.log(decoded.payload)
+      console.log('login model login accountLogin-responser',response);
 
       yield put({
         type: 'changeLoginStatus',
-        payload: decoded.payload,
+        payload: response.data,
       });
 
       // Login successfully
@@ -34,7 +28,7 @@ export default {
         const datetime = new Date();
         datetime.setTime(datetime.getTime() + (60 * 60 * 1000));
         const expires = `expires=${datetime.toGMTString()}`;
-        document.cookie = `token=${response.data};${expires}`;
+        document.cookie = `token=${response.data.jwt};${expires}`;
 
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
@@ -83,16 +77,14 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log(payload.userinfo.userAuthority);
-      setAuthority(payload.userinfo.userAuthority);
-      let newstatus = 'error';
-      if (payload.code === 10000) {
-        newstatus = 'ok';
-      }
+      console.log("login model changeLoginStatus",payload);
+      setAuthority(payload.userAuthority);
       return {
         ...state,
-        status: newstatus,
-        type: payload.type,
+        ...{
+          status:payload.status,
+          currentAuthority:payload.userAuthority,
+        },
       };
     },
   },

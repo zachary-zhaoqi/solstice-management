@@ -134,7 +134,7 @@ export default class BasicLayout extends React.PureComponent {
 
     dispatch({
       type: 'user/fetchCurrent',
-      payload: decoded.payload.userinfo.id,
+      payload: decoded.payload.userId,
     });
   }
 

@@ -1,10 +1,10 @@
 import React from 'react';
+// import createHistory from 'history/createBrowserHistory';
+import { createHashHistory } from 'history'; // 如果是hash路由
 import PromiseRender from './PromiseRender';
 import { CURRENT } from './renderAuthorize';
-
 import request from '../../utils/request';
-import { isRegExp } from 'util';
-import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
+
 function isPromise(obj) {
   return (
     !!obj &&
@@ -36,22 +36,26 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
   }
   const jwt = require('jsonwebtoken');
   const decoded = jwt.decode(token, { complete: true });
-  if (decoded == null) {
+  if (decoded === null || decoded.payload === null || decoded.payload.userId === null) {
+    // console.log("decoded null");
     return Exception;
   }
+  const { userId } = decoded.payload;
 
-  const userid = decoded.payload.userinfo.id;
   // console.log('checkPermissions', decoded);
-  if (userid === undefined || userid === '') {
+  if (userId === undefined || userId === null) {
     return Exception;
   }
-  const response = request(`/userinfo/userInfo/${userid}`);
-  response.then((result) => {
-    if (result.code !== 10000) {
-      return Exception;
+  // const response = request(`/userinfo/userInfo/${userId}`);
+  // const {dispatch} = this.props;
+  request(`/userinfo/userInfo//${userId}  `).then((result) => {
+    if (result !== null && result.code !== 10000) {
+      // dispatch(routerRedux.push('/user/logins'));
+      // con  sole.log("createHistory().push('/user/logins');")
+      createHashHistory().push('/user/logout');
+      // 后期要重新登出，不能仅仅跳转到登陆页。
     }
   })
-
 
   if (!authority) {
     return target;

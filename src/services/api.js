@@ -87,3 +87,7 @@ export async function AccountLogin(params) {
     body: params,
   });
 }
+
+export async function getDataDictionary(params) {
+  return request(`dictionary/dataDictionary?${stringify(params)}`)
+}

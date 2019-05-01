@@ -11,8 +11,9 @@ import {
   Radio,
   Icon,
   Tooltip,
+  TreeSelect,
   Row,
-  Col
+  Col,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './style.less';
@@ -22,11 +23,21 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ loading }) => ({
+@connect(({ category, loading }) => ({
   submitting: loading.effects['form/submitRegularForm'],
+  category,
 }))
 @Form.create()
 export default class BasicForms extends PureComponent {
+
+  componentDidMount() {
+    console.log('addForm-componentDidMount this.props', this.props);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'category/getCategoryTreeData',
+    });
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, dispatch } = this.props;
@@ -72,6 +83,21 @@ export default class BasicForms extends PureComponent {
           <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24}>
+                <FormItem {...formItemLayout} label="产品分类">
+                  {getFieldDecorator('categoryNo')(
+                    <TreeSelect
+                      style={{ width: 300 }}
+                      value={this.state.value}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      treeData={categoryTreeData}
+                      placeholder="Please select"
+                      treeDefaultExpandAll
+                      onChange={this.onChange}
+                    />
+                  )}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="商品名称">
                   {getFieldDecorator('name', {
                     rules: [
@@ -81,18 +107,6 @@ export default class BasicForms extends PureComponent {
                       },
                     ],
                   })(<Input placeholder="请输入商品名称" />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem {...formItemLayout} label="产品分类">
-                  {getFieldDecorator('publicUsers')(
-                    <Select defaultValue="lucy" style={{ width: 120 }}>
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="disabled" disabled>Disabled</Option>
-                      <Option value="Yiminghe">yiminghe</Option>
-                    </Select>
-                  )}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>

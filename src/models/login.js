@@ -11,12 +11,11 @@ export default {
   state: {
     status: undefined,
   },
-
+  
   effects: {
     *login({ payload }, { call, put }) {
-      console.log(payload);      
       const response = yield call(AccountLogin, payload);
-      console.log('login model login accountLogin-responser',response);
+      // console.log('login model login accountLogin-responser',response);
 
       yield put({
         type: 'changeLoginStatus',

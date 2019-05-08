@@ -11,7 +11,7 @@ export default {
   state: {
     status: undefined,
   },
-  
+
   effects: {
     *login({ payload }, { call, put }) {
       const response = yield call(AccountLogin, payload);
@@ -25,7 +25,7 @@ export default {
       // Login successfully
       if (response.code === 10000) {
         const datetime = new Date();
-        datetime.setTime(datetime.getTime() + (60 * 60 * 1000));
+        datetime.setTime(datetime.getTime() + (response.data.jwtExpires));
         const expires = `expires=${datetime.toGMTString()}`;
         document.cookie = `token=${response.data.jwt};${expires}`;
 
@@ -76,13 +76,13 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log("login model changeLoginStatus",payload);
+      // console.log("login model changeLoginStatus",payload);
       setAuthority(payload.userAuthority);
       return {
         ...state,
         ...{
-          status:payload.status,
-          currentAuthority:payload.userAuthority,
+          status: payload.status,
+          currentAuthority: payload.userAuthority,
         },
       };
     },

@@ -25,7 +25,7 @@ export default class LoginPage extends Component {
     const { type } = this.state;
     const { dispatch } = this.props;
     if (!err) {
-      console.log("login parms", values);
+      // console.log("login parms", values);
       dispatch({
         type: 'login/login',
         payload: {

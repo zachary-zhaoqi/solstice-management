@@ -3,39 +3,41 @@ import { connect } from 'dva';
 import {
   Form,
   Input,
-  DatePicker,
   Select,
   Button,
   Card,
-  InputNumber,
-  Radio,
-  Icon,
-  Tooltip,
   TreeSelect,
   Row,
   Col,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ category, loading }) => ({
+@connect(({ brand, category, loading }) => ({
   submitting: loading.effects['form/submitRegularForm'],
-  category,
+  categoryTreeData: category.categoryTreeData,
+  brandArray: brand.brandArray,
 }))
 @Form.create()
 export default class BasicForms extends PureComponent {
 
   componentDidMount() {
-    console.log('addForm-componentDidMount this.props', this.props);
+    console.log('addForm-componentDidMount this.props -before', this.props);
     const { dispatch } = this.props;
+
     dispatch({
-      type: 'category/getCategoryTreeData',
+      type: 'brand/getTotalBrand',
     });
+
+    dispatch({
+      type: 'category/getCategoryTree',
+    });
+
+    console.log('addForm-componentDidMount this.props -later', this.props);
+
   }
 
   handleSubmit = e => {
@@ -52,7 +54,7 @@ export default class BasicForms extends PureComponent {
   };
 
   render() {
-    const { submitting, form } = this.props;
+    const { submitting, form, categoryTreeData, brandArray } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
     const formItemLayout = {
@@ -73,7 +75,6 @@ export default class BasicForms extends PureComponent {
         sm: { span: 10, offset: 7 },
       },
     };
-
     return (
       <PageHeaderLayout
         title="新增商品"
@@ -86,12 +87,9 @@ export default class BasicForms extends PureComponent {
                 <FormItem {...formItemLayout} label="产品分类">
                   {getFieldDecorator('categoryNo')(
                     <TreeSelect
-                      style={{ width: 300 }}
-                      value={this.state.value}
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       treeData={categoryTreeData}
-                      placeholder="Please select"
-                      treeDefaultExpandAll
+                      placeholder="请选择类别"
                       onChange={this.onChange}
                     />
                   )}
@@ -99,7 +97,7 @@ export default class BasicForms extends PureComponent {
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="商品名称">
-                  {getFieldDecorator('name', {
+                  {getFieldDecorator('brandName', {
                     rules: [
                       {
                         required: true,
@@ -111,12 +109,12 @@ export default class BasicForms extends PureComponent {
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="品牌">
-                  {getFieldDecorator('publicUsers')(
-                    <Select defaultValue="lucy" style={{ width: 120 }}>
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="disabled" disabled>Disabled</Option>
-                      <Option value="Yiminghe">yiminghe</Option>
+                  {getFieldDecorator('brand_id')(
+                    <Select
+                      style={{ width: 120 }}
+                      placeholder="请选择品牌"
+                    >
+                      {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
                     </Select>
                   )}
                 </FormItem>
@@ -132,12 +130,14 @@ export default class BasicForms extends PureComponent {
                         message: '请输入商品名称',
                       },
                     ],
-                  })(<Select defaultValue="lucy" style={{ width: 120 }}>
-                    <Option value="jack">Jack</Option>
-                    <Option value="lucy">Lucy</Option>
-                    <Option value="disabled" disabled>Disabled</Option>
-                    <Option value="Yiminghe">yiminghe</Option>
-                  </Select>)}
+                  })(
+                    <Select defaultValue="lucy" style={{ width: 120 }}>
+                      <Option value="jack">Jack</Option>
+                      <Option value="lucy">Lucy</Option>
+                      <Option value="disabled" disabled>Disabled</Option>
+                      <Option value="Yiminghe">yiminghe</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>

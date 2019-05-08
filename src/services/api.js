@@ -82,7 +82,7 @@ export async function queryNotices() {
 // 以上为虚假url
 
 export async function AccountLogin(params) {
-  return request('userlogin/session/', {
+  return request('userlogin/session', {
     method: 'POST',
     body: params,
   });
@@ -90,4 +90,8 @@ export async function AccountLogin(params) {
 
 export async function getDataDictionary(params) {
   return request(`dictionary/dataDictionary?${stringify(params)}`)
+}
+
+export async function getBrand(params) {
+  return request(`/brand/brandInfo?${stringify(params)}`)
 }

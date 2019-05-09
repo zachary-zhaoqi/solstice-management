@@ -82,11 +82,11 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
     '/merchandise/manage': {
-      component: dynamicWrapper(app, [], () => import('../routes/Merchandise/Manage')),
+      component: dynamicWrapper(app, [], () => import('../routes/product/Manage')),
     },
     '/merchandise/add': {
       component: dynamicWrapper(app, ['dictionary', 'merchandise', 'brand'], () =>
-        import('../routes/Merchandise/AddForm')),
+        import('../routes/product/AddForm')),
     },
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),

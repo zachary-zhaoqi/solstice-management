@@ -6,7 +6,9 @@ export default {
   },
 
   effects: {
-    *add
+    *addProduct({ payload }, { call, put }){
+
+    },
 
   },
 

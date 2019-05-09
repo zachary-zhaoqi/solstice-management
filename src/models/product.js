@@ -1,11 +1,12 @@
 export default {
-  namespace: 'merchandise',
+  namespace: 'product',
 
   state: {
     status: undefined,
   },
 
   effects: {
+    *add
 
   },
 

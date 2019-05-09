@@ -56,10 +56,11 @@ export default class BasicForms extends PureComponent {
     const { form, dispatch } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        dispatch({
-          type: 'form/submitRegularForm',
-          payload: values,
-        });
+        console.log("handleSubmit values",values);
+        // dispatch({
+        //   type: 'form/submitRegularForm',
+        //   payload: values,
+        // });
       }
     });
   };
@@ -96,7 +97,14 @@ export default class BasicForms extends PureComponent {
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="产品分类">
-                  {getFieldDecorator('categoryNo')(
+                  {getFieldDecorator('categoryNo', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请选择产品分类',
+                      },
+                    ],
+                  })(
                     <TreeSelect
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       treeData={categoryTreeData}
@@ -175,7 +183,7 @@ export default class BasicForms extends PureComponent {
                   {...formItemLayout} 
                   label={
                     <span>
-                      平均成本
+                      零售价格
                       <em className={styles.optional}>
                         &nbsp;
                         <Tooltip title="都是价格，跟前面一样加个提示，一视同仁。">

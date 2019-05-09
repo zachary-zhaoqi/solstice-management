@@ -7,7 +7,7 @@ export default {
     brandArray: [],
   },
 
-  effcets: {
+  effects: {
     *getTotalBrand(_, { call, put }) {
       console.log("model brand getTotalBrand");
 
@@ -22,12 +22,13 @@ export default {
     },
   },
 
-  reducer: {
+  reducers: {
     saveBrandArray(state, { payload }) {
+      console.log("brand model reducer saveBrandArray payload",payload);
       return {
         ...state,
         brandArray:payload,
       };
     },
   },
-}
+};

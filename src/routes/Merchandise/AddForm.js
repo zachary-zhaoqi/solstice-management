@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import {
   Form,
   Input,
+  InputNumber,
   Select,
   Button,
   Card,
@@ -56,7 +57,7 @@ export default class BasicForms extends PureComponent {
   render() {
     const { submitting, form, categoryTreeData, brandArray } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
-
+    console.log("addForm render brandAray", brandArray);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -111,7 +112,6 @@ export default class BasicForms extends PureComponent {
                 <FormItem {...formItemLayout} label="品牌">
                   {getFieldDecorator('brand_id')(
                     <Select
-                      style={{ width: 120 }}
                       placeholder="请选择品牌"
                     >
                       {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
@@ -120,30 +120,42 @@ export default class BasicForms extends PureComponent {
                 </FormItem>
               </Col>
             </Row>
-            <Row>
+            <Row gutter={16}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem {...formItemLayout} label="包装规格">
-                  {getFieldDecorator('name', {
+                <FormItem {...formItemLayout} label="平均成本">
+                  {getFieldDecorator('averageCost', {
                     rules: [
                       {
                         required: true,
-                        message: '请输入商品名称',
+                        message: '请输入产品的平均成本',
                       },
                     ],
                   })(
-                    <Select defaultValue="lucy" style={{ width: 120 }}>
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="disabled" disabled>Disabled</Option>
-                      <Option value="Yiminghe">yiminghe</Option>
-                    </Select>
+                    <InputNumber
+                      formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                      precision={2}
+                      style={{ width: 'auto' }}
+                    />,
                   )}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem {...formItemLayout} label="上架状态">
-                  {getFieldDecorator('publicUsers')(
-                    <Select defaultValue="lucy" style={{ width: 120 }}>
+                <FormItem {...formItemLayout} label="产品售价">
+                  {getFieldDecorator('price')(
+                    <InputNumber
+                      formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                      precision={2}
+                      style={{ width: 'auto' }}
+                    />,
+                  )}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem {...formItemLayout} label="保固期限">
+                  {getFieldDecorator('shelfLife')(
+                    <Select defaultValue="lucy" placeholder="请选择品牌">
                       <Option value="jack">Jack</Option>
                       <Option value="lucy">Lucy</Option>
                       <Option value="disabled" disabled>Disabled</Option>

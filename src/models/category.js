@@ -9,7 +9,7 @@ export default {
     categoryName: undefined,
   },
 
-  effcets: {
+  effects: {
     *getCategoryTree(_, { call, put }) {
       const response = yield call(getDataDictionary, { key: 'category', isTree: true });
       yield put({
@@ -19,7 +19,7 @@ export default {
     },
   },
 
-  reducer: {
+  reducers: {
     saveCategoryTreeData(state, { payload }) {
       const tree=[];
       payload.forEach(treenode => {

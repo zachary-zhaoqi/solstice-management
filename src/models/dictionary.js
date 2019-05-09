@@ -6,6 +6,7 @@ export default {
   state: {
     categoryTreeData: undefined,
     shelfLifeArray:[],
+    productStatusArray:[],
   },
 
   effects: {
@@ -16,13 +17,22 @@ export default {
         payload: response.data,
       });
     },
+
     *getShelfLifeArray(_,{call,put}){
       const response=yield call(getDataDictionary,{key:'shelfLife'});
       yield put({
         type:'saveShelfLifeArray',
         payload:response.data,
       });
-    }
+    },
+    
+    *getProductStatusArray(_,{call,put}){
+      const response=yield call(getDataDictionary,{key:'productStatus'});
+      yield put({
+        type:'saveProductStatusArray',
+        payload:response.data,
+      });
+    },
   },
 
   reducers: {
@@ -32,11 +42,19 @@ export default {
         categoryTreeData:payload,
       };
     },
+
     saveShelfLifeArray(state, { payload }) {
     console.log("model dictionary reducers savaShelfLifeArray payload", payload);      
       return {
         ...state,
         shelfLifeArray:payload,
+      };
+    },
+
+    saveProductStatusArray(state, { payload }) {    
+      return {
+        ...state,
+        productStatusArray:payload,
       };
     },
   },

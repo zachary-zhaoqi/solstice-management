@@ -5,28 +5,33 @@ import {
   Input,
   InputNumber,
   Select,
+  Radio,
   Button,
   Card,
   TreeSelect,
+  Tooltip,
+  Icon,
   Row,
   Col,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
 
-@connect(({ brand, category, loading }) => ({
+@connect(({ brand, dictionary, loading }) => ({
   submitting: loading.effects['form/submitRegularForm'],
-  categoryTreeData: category.categoryTreeData,
+  categoryTreeData: dictionary.categoryTreeData,
   brandArray: brand.brandArray,
+  shelfLifeArray:dictionary.shelfLifeArray,
+  productStatusArray:dictionary.productStatusArray,
 }))
 @Form.create()
 export default class BasicForms extends PureComponent {
 
   componentDidMount() {
-    console.log('addForm-componentDidMount this.props -before', this.props);
     const { dispatch } = this.props;
 
     dispatch({
@@ -34,11 +39,16 @@ export default class BasicForms extends PureComponent {
     });
 
     dispatch({
-      type: 'category/getCategoryTree',
+      type: 'dictionary/getCategoryTree',
     });
 
-    console.log('addForm-componentDidMount this.props -later', this.props);
+    dispatch({
+      type: 'dictionary/getShelfLifeArray',
+    });
 
+    dispatch({
+      type: 'dictionary/getProductStatusArray',
+    });
   }
 
   handleSubmit = e => {
@@ -55,9 +65,9 @@ export default class BasicForms extends PureComponent {
   };
 
   render() {
-    const { submitting, form, categoryTreeData, brandArray } = this.props;
-    const { getFieldDecorator, getFieldValue } = form;
-    console.log("addForm render brandAray", brandArray);
+    const { submitting, form, categoryTreeData, brandArray,shelfLifeArray,productStatusArray } = this.props;
+    const { getFieldDecorator} = form;
+    console.log("addForm render props", this.props);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -79,7 +89,7 @@ export default class BasicForms extends PureComponent {
     return (
       <PageHeaderLayout
         title="新增商品"
-        content="请填写一下商品属性，以添加新的商品。（带*为必填项目）"
+        content="请填写一下商品属性，以添加新的商品。"
       >
         <Card bordered={false}>
           <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
@@ -109,7 +119,14 @@ export default class BasicForms extends PureComponent {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem {...formItemLayout} label="品牌">
+                <FormItem
+                  {...formItemLayout}
+                  label={
+                    <span>品牌
+                      <em className={styles.optional}>（选填）</em>
+                    </span>
+                  }
+                >
                   {getFieldDecorator('brand_id')(
                     <Select
                       placeholder="请选择品牌"
@@ -122,12 +139,25 @@ export default class BasicForms extends PureComponent {
             </Row>
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem {...formItemLayout} label="平均成本">
+                <FormItem 
+                  {...formItemLayout} 
+                  label={
+                    <span>
+                      平均成本
+                      <em className={styles.optional}>
+                        &nbsp;
+                        <Tooltip title="其实也就是成本价，这么说听起来比较严谨">
+                          <Icon type="info-circle-o" style={{ marginRight: 4 }} />
+                        </Tooltip>
+                      </em>
+                    </span>
+                  }
+                >
                   {getFieldDecorator('averageCost', {
                     rules: [
                       {
                         required: true,
-                        message: '请输入产品的平均成本',
+                        message: '请输入产品平均成本',
                       },
                     ],
                   })(
@@ -141,8 +171,28 @@ export default class BasicForms extends PureComponent {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem {...formItemLayout} label="产品售价">
-                  {getFieldDecorator('price')(
+                <FormItem 
+                  {...formItemLayout} 
+                  label={
+                    <span>
+                      平均成本
+                      <em className={styles.optional}>
+                        &nbsp;
+                        <Tooltip title="都是价格，跟前面一样加个提示，一视同仁。">
+                          <Icon type="info-circle-o" style={{ marginRight: 4 }} />
+                        </Tooltip>
+                      </em>
+                    </span>
+                  }
+                >
+                  {getFieldDecorator('price', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请输入产品零售价格',
+                      },
+                    ],
+                  })(
                     <InputNumber
                       formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={value => value.replace(/\$\s?|(,*)/g, '')}
@@ -156,47 +206,31 @@ export default class BasicForms extends PureComponent {
                 <FormItem {...formItemLayout} label="保固期限">
                   {getFieldDecorator('shelfLife')(
                     <Select defaultValue="lucy" placeholder="请选择品牌">
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="disabled" disabled>Disabled</Option>
-                      <Option value="Yiminghe">yiminghe</Option>
+                      {shelfLifeArray.map(shelfLife => <Option key={shelfLife.value}>{shelfLife.labelZhCn}</Option>)}                      
                     </Select>
                   )}
                 </FormItem>
               </Col>
             </Row>
-            <Row gutter={16}>
-              <Col lg={24} md={24} sm={24}>
-                <FormItem {...formItemLayout} label="商品图片">
-                  {getFieldDecorator('name', {
-                    rules: [
-                      {
-                        required: true,
-                        message: '请输入商品名称',
-                      },
-                    ],
-                  })(<Input placeholder="改用Upload" />)}
-                </FormItem>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col lg={24} md={24} sm={24}>
-                <FormItem {...formItemLayout} label="商品描述">
-                  {getFieldDecorator('name', {
-                    rules: [
-                      {
-                        required: true,
-                        message: '请输入商品描述',
-                      },
-                    ],
-                  })(<TextArea
-                    style={{ minHeight: 32 }}
-                    placeholder="请输入该商品的详细描述"
-                    rows={4}
-                  />)}
-                </FormItem>
-              </Col>
-            </Row>
+            <FormItem {...formItemLayout} label="商品描述">
+              {getFieldDecorator('describe')(
+                <TextArea
+                  style={{ minHeight: 32 }}
+                  placeholder="请输入该商品的详细描述"
+                  rows={4}
+                />)}
+            </FormItem>
+            <FormItem {...formItemLayout} label="产品状态" help="单纯就是秀一下这里可以放注解">
+              <div>
+                {getFieldDecorator('productStatus', {
+                  initialValue: productStatusArray[0]===undefined?undefined:productStatusArray[0].value,
+                })(
+                  <Radio.Group>
+                    {productStatusArray.map(productStatus => <Radio value={productStatus.value}>{productStatus.labelZhCn}</Radio>)}
+                  </Radio.Group>
+                )}
+              </div>
+            </FormItem>
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>

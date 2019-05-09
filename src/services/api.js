@@ -95,3 +95,10 @@ export async function getDataDictionary(params) {
 export async function getBrand(params) {
   return request(`/brand/brandInfo?${stringify(params)}`)
 }
+
+export async function saveProduct(params) {
+  return request(`product/productInfo/${params.name}`, {
+    method: 'POST',
+    body: params,
+  });
+}

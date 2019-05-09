@@ -81,11 +81,11 @@ export const getRouterData = app => {
     '/': {
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
-    '/merchandise/manage': {
+    '/product/manage': {
       component: dynamicWrapper(app, [], () => import('../routes/product/Manage')),
     },
-    '/merchandise/add': {
-      component: dynamicWrapper(app, ['dictionary', 'merchandise', 'brand'], () =>
+    '/product/add': {
+      component: dynamicWrapper(app, ['dictionary', 'product', 'brand'], () =>
         import('../routes/product/AddForm')),
     },
     '/dashboard/analysis': {

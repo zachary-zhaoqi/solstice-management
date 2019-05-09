@@ -4,7 +4,7 @@ const menuData = [
   {
     name: '商品管理',
     icon: 'profile',
-    path: 'merchandise',
+    path: 'product',
     children: [
       {
         name: '商品管理',

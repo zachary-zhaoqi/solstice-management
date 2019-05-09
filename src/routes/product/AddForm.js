@@ -14,6 +14,7 @@ import {
   Row,
   Col,
 } from 'antd';
+import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './style.less';
 
@@ -25,8 +26,8 @@ const { TextArea } = Input;
   submitting: loading.effects['form/submitRegularForm'],
   categoryTreeData: dictionary.categoryTreeData,
   brandArray: brand.brandArray,
-  shelfLifeArray:dictionary.shelfLifeArray,
-  productStatusArray:dictionary.productStatusArray,
+  shelfLifeArray: dictionary.shelfLifeArray,
+  productStatusArray: dictionary.productStatusArray,
 }))
 @Form.create()
 export default class BasicForms extends PureComponent {
@@ -56,18 +57,18 @@ export default class BasicForms extends PureComponent {
     const { form, dispatch } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log("handleSubmit values",values);
-        // dispatch({
-        //   type: 'form/submitRegularForm',
-        //   payload: values,
-        // });
+        dispatch({
+          type: 'product/saveProduct',
+          payload: values,
+        });
+        dispatch(routerRedux.push({ pathname: '/product/manage' }))
       }
     });
   };
 
   render() {
-    const { submitting, form, categoryTreeData, brandArray,shelfLifeArray,productStatusArray } = this.props;
-    const { getFieldDecorator} = form;
+    const { submitting, form, categoryTreeData, brandArray, shelfLifeArray, productStatusArray } = this.props;
+    const { getFieldDecorator } = form;
     console.log("addForm render props", this.props);
     const formItemLayout = {
       labelCol: {
@@ -97,7 +98,7 @@ export default class BasicForms extends PureComponent {
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="产品分类">
-                  {getFieldDecorator('categoryNo', {
+                  {getFieldDecorator('categorySn', {
                     rules: [
                       {
                         required: true,
@@ -109,14 +110,13 @@ export default class BasicForms extends PureComponent {
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       treeData={categoryTreeData}
                       placeholder="请选择类别"
-                      onChange={this.onChange}
                     />
                   )}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="商品名称">
-                  {getFieldDecorator('brandName', {
+                  {getFieldDecorator('name', {
                     rules: [
                       {
                         required: true,
@@ -135,7 +135,7 @@ export default class BasicForms extends PureComponent {
                     </span>
                   }
                 >
-                  {getFieldDecorator('brand_id')(
+                  {getFieldDecorator('brandId')(
                     <Select
                       placeholder="请选择品牌"
                     >
@@ -147,8 +147,8 @@ export default class BasicForms extends PureComponent {
             </Row>
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem 
-                  {...formItemLayout} 
+                <FormItem
+                  {...formItemLayout}
                   label={
                     <span>
                       平均成本
@@ -179,8 +179,8 @@ export default class BasicForms extends PureComponent {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem 
-                  {...formItemLayout} 
+                <FormItem
+                  {...formItemLayout}
                   label={
                     <span>
                       零售价格
@@ -213,8 +213,8 @@ export default class BasicForms extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="保固期限">
                   {getFieldDecorator('shelfLife')(
-                    <Select defaultValue="lucy" placeholder="请选择品牌">
-                      {shelfLifeArray.map(shelfLife => <Option key={shelfLife.value}>{shelfLife.labelZhCn}</Option>)}                      
+                    <Select placeholder="请选择品牌">
+                      {shelfLifeArray.map(shelfLife => <Option key={shelfLife.value}>{shelfLife.labelZhCn}</Option>)}
                     </Select>
                   )}
                 </FormItem>
@@ -231,7 +231,7 @@ export default class BasicForms extends PureComponent {
             <FormItem {...formItemLayout} label="产品状态" help="单纯就是秀一下这里可以放注解">
               <div>
                 {getFieldDecorator('productStatus', {
-                  initialValue: productStatusArray[0]===undefined?undefined:productStatusArray[0].value,
+                  initialValue: productStatusArray[0] === undefined ? undefined : productStatusArray[0].value,
                 })(
                   <Radio.Group>
                     {productStatusArray.map(productStatus => <Radio value={productStatus.value}>{productStatus.labelZhCn}</Radio>)}
@@ -244,7 +244,7 @@ export default class BasicForms extends PureComponent {
               <Button type="primary" htmlType="submit" loading={submitting}>
                 提交
               </Button>
-              <Button style={{ marginLeft: 8 }}>保存</Button>
+              <Button style={{ marginLeft: 8 }} onClick={() => { form.resetFields(); }}>重置</Button>
             </FormItem>
           </Form>
         </Card>

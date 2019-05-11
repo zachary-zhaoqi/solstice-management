@@ -26,20 +26,27 @@ export default {
 
     *queryProduct({ payload }, { call, put }) {
       const response = yield call(queryProduct, payload);
+      console.log("prodeuct model effects queryProduct response",response);
       yield put({
         type: 'savaProductList',
-        payload: response.date || [],
+        payload: response.data || [],
       });
     },
   },
 
   reducers: {
     savaProductList(state, { payload }) {
+
+      const nowdata={
+        list:payload,
+        pagination: {},
+      }
+
       return {
         ...state,
-        ...payload,
+        data:nowdata,
       }
-    }
+    },
   },
 
 }

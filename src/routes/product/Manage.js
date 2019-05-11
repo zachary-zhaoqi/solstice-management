@@ -288,7 +288,7 @@ export default class TableList extends PureComponent {
       loading,
     } = this.props;
     const { selectedRows } = this.state;
-
+console.log("manage render data",data);
     const columns = [
       {
         title: '商品条形码',

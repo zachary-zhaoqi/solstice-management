@@ -106,3 +106,10 @@ export async function saveProduct(params) {
 export async function queryProduct(params) {
   return request(`/product/productInfo?${stringify(params)}`)
 }
+
+export async function removeProduct(params) {
+  return request(`product/productInfo/`, {
+    method: 'DELETE',
+    body: params,
+  });
+}

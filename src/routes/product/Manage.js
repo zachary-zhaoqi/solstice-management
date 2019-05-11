@@ -15,6 +15,7 @@ import {
   Dropdown,
   Menu,
   message,
+  Popconfirm,
   Badge,
   Divider,
 } from 'antd';
@@ -34,8 +35,8 @@ const statusMap = {
   '上架': 'success',
   '缺货': 'error',
   '绝版': 'processing',
+  '默认': 'default',
 }
-// ['default', 'processing', 'success', 'error'];
 
 @connect(({
   product, brand, dictionary, rule, loading }) => ({
@@ -101,7 +102,7 @@ export default class TableList extends PureComponent {
     }
 
     dispatch({
-      type: 'rule/fetch',
+      type: 'product/queryProduct',
       payload: params,
     });
   };
@@ -125,26 +126,68 @@ export default class TableList extends PureComponent {
     });
   };
 
-  handleMenuClick = e => {
+  handleRemoveClick = (record) => {
     const { dispatch } = this.props;
+    dispatch({
+      type: 'product/removeProduct',
+      payload: [record.id],
+    });
+  }
+
+  handleMenuClick = e => {
+    const { dispatch,form } = this.props;
     const { selectedRows } = this.state;
 
     if (!selectedRows) return;
 
     switch (e.key) {
-      case 'remove':
+      case 'remove': {
+        const idList = selectedRows.map(row => row.id);
         dispatch({
-          type: 'rule/remove',
-          payload: {
-            no: selectedRows.map(row => row.no).join(','),
-          },
-          callback: () => {
+          type: 'product/removeProduct',
+          payload: idList,
+          callback: (response) => {
             this.setState({
               selectedRows: [],
             });
+            console.log('Manage handleMenuClick callback response---------',response);
+            // if(response.success){
+              // message.success('response.message');
+              message.success(response.message);
+            // }else{
+            //   message.error(response.message);
+            // }
+            form.validateFields((err, fieldsValue) => {
+              if (err) return;
+        
+              const values = {
+                ...fieldsValue,
+                updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+              };
+        
+              this.setState({
+                formValues: values,
+              });
+        
+              dispatch({
+                type: 'product/queryProduct',
+                payload: values,
+              });
+            });
           },
         });
+        // .then((res)=>{
+        //   console.log("handleMenuClick remove res",res)
+        //   if (res) {
+        //     message.success('修改成功')
+        //   } else {
+        //     message.error('修改失败')
+        //   }
+        // });
+
+     
         break;
+      }
       default:
         break;
     }
@@ -302,7 +345,7 @@ export default class TableList extends PureComponent {
         dataIndex: 'name',
         fixed: 'left',
         width: 100,
-        key:'id',
+        key: 'id',
       },
       {
         title: '商品条形码',
@@ -371,11 +414,13 @@ export default class TableList extends PureComponent {
       {
         title: '操作',
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <Fragment>
             <a href="">修改</a>
             <Divider type="vertical" />
-            <a href="">删除</a>
+            <Popconfirm title="你确定要删掉该商品吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">
+              <a>删除</a>
+            </Popconfirm>
           </Fragment>
         ),
       },

@@ -34,28 +34,31 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
       token = c.substring(name.length, c.length);
     }
   }
-  const jwt = require('jsonwebtoken');
-  const decoded = jwt.decode(token, { complete: true });
-  if (decoded === null || decoded.payload === null || decoded.payload.userId === null) {
-    // console.log("decoded null");
-    return Exception;
+  if (token === "") {
+    createHashHistory().push('/user/logout');
   }
-  const { userId } = decoded.payload;
+  // const jwt = require('jsonwebtoken');
+  // const decoded = jwt.decode(token, { complete: true });
+  // if (decoded === null || decoded.payload === null || decoded.payload.userId === null) {
+  //   // console.log("decoded null");
+  //   return Exception;
+  // }
+  // const { userId } = decoded.payload;
 
-  // console.log('checkPermissions', decoded);
-  if (userId === undefined || userId === null) {
-    return Exception;
-  }
-  // const response = request(`/userinfo/userInfo/${userId}`);
-  // const {dispatch} = this.props;
-  request(`/userinfo/userInfo//${userId}  `).then((result) => {
-    if (result !== null && result.code !== 10000) {
-      // dispatch(routerRedux.push('/user/logins'));
-      // con  sole.log("createHistory().push('/user/logins');")
-      createHashHistory().push('/user/logout');
-      // 后期要重新登出，不能仅仅跳转到登陆页。
-    }
-  })
+  // // console.log('checkPermissions', decoded);
+  // if (userId === undefined || userId === null) {
+  //   return Exception;
+  // }
+  // // const response = request(`/userinfo/userInfo/${userId}`);
+  // // const {dispatch} = this.props;
+  // request(`/userinfo/userInfo//${userId}  `).then((result) => {
+  //   if (result !== null &&result.code!==null&& result.code !== 10000) {
+  //     // dispatch(routerRedux.push('/user/logins'));
+  //     // con  sole.log("createHistory().push('/user/logins');")
+  //     createHashHistory().push('/user/logout');
+  //     // 后期要重新登出，不能仅仅跳转到登陆页。
+  //   }
+  // })
 
   if (!authority) {
     return target;

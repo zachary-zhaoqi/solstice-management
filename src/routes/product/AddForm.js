@@ -243,6 +243,15 @@ export default class BasicForms extends PureComponent {
                 提交
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={() => { form.resetFields(); }}>重置</Button>
+              <Button
+                style={{ marginLeft: 8 }}
+                onClick={() => {
+                  const { dispatch } = this.props;
+                  dispatch(routerRedux.push({ pathname: '/product/manage' }))
+                }}
+              >
+                返回
+              </Button>
             </FormItem>
           </Form>
         </Card>

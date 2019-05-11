@@ -14,7 +14,6 @@ import {
   Button,
   Dropdown,
   Menu,
-  Modal,
   message,
   Badge,
   Divider,
@@ -31,7 +30,13 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const statusMap = ['default', 'processing', 'success', 'error'];
+const statusMap = {
+  '上架': 'success',
+  '缺货': 'error',
+  '绝版': 'processing',
+}
+// ['default', 'processing', 'success', 'error'];
+
 @connect(({
   product, brand, dictionary, rule, loading }) => ({
     rule,
@@ -50,11 +55,8 @@ export default class TableList extends PureComponent {
     formValues: {},
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'rule/fetch',
-    // });
 
     dispatch({
       type: 'brand/getTotalBrand',
@@ -65,8 +67,12 @@ export default class TableList extends PureComponent {
     });
 
     dispatch({
-      type: 'dictionary/getShelfLifeArray',
+      type: 'dictionary/getProductStatusArray',
     });
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
 
     dispatch({
       type: 'product/queryProduct',
@@ -248,7 +254,7 @@ export default class TableList extends PureComponent {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="产品状态" help="单纯就是秀一下这里可以放注解">
+            <FormItem label="产品状态">
               <div>
                 {getFieldDecorator('productStatus')(
                   <Radio.Group>
@@ -288,8 +294,16 @@ export default class TableList extends PureComponent {
       loading,
     } = this.props;
     const { selectedRows } = this.state;
-console.log("manage render data",data);
+
+    console.log("manage render props", this.props);
     const columns = [
+      {
+        title: '产品名称',
+        dataIndex: 'name',
+        fixed: 'left',
+        width: 100,
+        key:'id',
+      },
       {
         title: '商品条形码',
         dataIndex: 'barCode',
@@ -301,10 +315,6 @@ console.log("manage render data",data);
       {
         title: '品牌',
         dataIndex: 'brandName',
-      },
-      {
-        title: '产品名称',
-        dataIndex: 'name',
       },
       {
         title: '商品描述',
@@ -329,33 +339,38 @@ console.log("manage render data",data);
       {
         title: '状态',
         dataIndex: 'productStatus',
-        filters: [
-          {
-            text: productStatusArray[0],
-            value: 0,
-          },
-          {
-            text: productStatusArray[1],
-            value: 1,
-          },
-          {
-            text: productStatusArray[2],
-            value: 2,
-          },
-        ],
-        onFilter: (value, record) => record.status.toString() === value,
+        width: 100,
+        // filters: [
+        //   {
+        //     text:productStatusArray.length===0?"":productStatusArray[0].labelZhCn,
+        //     value: 0,
+        //   },
+        //   {
+        //     text:productStatusArray.length===0?"":productStatusArray[1].labelZhCn,
+        //     value: 1,
+        //   },
+        //   {
+        //     text:productStatusArray.length===0?"":productStatusArray[2].labelZhCn,
+        //     value: 2,
+        //   },
+        // ],
+        // onFilter: (value, record) => record.status.toString() === value,
         render(val) {
-          return <Badge status={statusMap[val]} text={status[val]} />;
+
+          return <Badge status={statusMap[val]} text={val} />;
         },
       },
       {
         title: '更新时间',
-        dataIndex: 'updatedAt',
+        dataIndex: 'modifyTime',
         sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        render(val) {
+          return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
+        },
       },
       {
         title: '操作',
+        fixed: 'right',
         render: () => (
           <Fragment>
             <a href="">修改</a>
@@ -406,6 +421,7 @@ console.log("manage render data",data);
               selectedRows={selectedRows}
               loading={loading}
               data={data}
+              scroll={{ x: 1500, y: 300 }}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

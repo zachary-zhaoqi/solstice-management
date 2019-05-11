@@ -4,7 +4,7 @@ export default {
   namespace: 'dictionary',
 
   state: {
-    categoryTreeData: undefined,
+    categoryTreeData: [],
     shelfLifeArray:[],
     productStatusArray:[],
   },

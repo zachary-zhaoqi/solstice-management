@@ -102,3 +102,7 @@ export async function saveProduct(params) {
     body: params,
   });
 }
+
+export async function queryProduct(params) {
+  return request(`/product/productInfo?${stringify(params)}`)
+}

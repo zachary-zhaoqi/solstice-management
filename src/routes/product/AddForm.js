@@ -136,9 +136,7 @@ export default class BasicForms extends PureComponent {
                   }
                 >
                   {getFieldDecorator('brandId')(
-                    <Select
-                      placeholder="请选择品牌"
-                    >
+                    <Select placeholder="请选择品牌">
                       {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
                     </Select>
                   )}
@@ -213,7 +211,7 @@ export default class BasicForms extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <FormItem {...formItemLayout} label="保固期限">
                   {getFieldDecorator('shelfLife')(
-                    <Select placeholder="请选择品牌">
+                    <Select placeholder="请选择">
                       {shelfLifeArray.map(shelfLife => <Option key={shelfLife.value}>{shelfLife.labelZhCn}</Option>)}
                     </Select>
                   )}

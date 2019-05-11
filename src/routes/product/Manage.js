@@ -8,17 +8,18 @@ import {
   Form,
   Input,
   Select,
+  TreeSelect,
+  Radio,
   Icon,
   Button,
   Dropdown,
   Menu,
-  InputNumber,
-  DatePicker,
   Modal,
   message,
   Badge,
   Divider,
 } from 'antd';
+import { routerRedux } from 'dva/router';
 import StandardTable from 'components/StandardTable';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
@@ -31,41 +32,19 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
-
-const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleAdd(fieldsValue);
-    });
-  };
-  return (
-    <Modal
-      title="新建规则"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
-        {form.getFieldDecorator('desc', {
-          rules: [{ required: true, message: 'Please input some description...' }],
-        })(<Input placeholder="请输入" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
-@connect(({ rule, loading }) => ({
-  rule,
-  loading: loading.models.rule,
-}))
+@connect(({
+  product, brand, dictionary, rule, loading }) => ({
+    rule,
+    product,
+    categoryTreeData: dictionary.categoryTreeData,
+    shelfLifeArray: dictionary.shelfLifeArray,
+    productStatusArray: dictionary.productStatusArray,
+    brandArray: brand.brandArray,
+    loading: loading.models.rule,
+  }))
 @Form.create()
 export default class TableList extends PureComponent {
   state = {
-    modalVisible: false,
     expandForm: false,
     selectedRows: [],
     formValues: {},
@@ -76,6 +55,23 @@ export default class TableList extends PureComponent {
     // dispatch({
     //   type: 'rule/fetch',
     // });
+
+    dispatch({
+      type: 'brand/getTotalBrand',
+    });
+
+    dispatch({
+      type: 'dictionary/getCategoryTree',
+    });
+
+    dispatch({
+      type: 'dictionary/getShelfLifeArray',
+    });
+
+    dispatch({
+      type: 'product/queryProduct',
+      payload: {},
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -111,7 +107,7 @@ export default class TableList extends PureComponent {
       formValues: {},
     });
     dispatch({
-      type: 'rule/fetch',
+      type: 'product/queryProduct',
       payload: {},
     });
   };
@@ -172,51 +168,31 @@ export default class TableList extends PureComponent {
       });
 
       dispatch({
-        type: 'rule/fetch',
+        type: 'product/queryProduct',
         payload: values,
       });
     });
   };
 
-  handleModalVisible = flag => {
-    this.setState({
-      modalVisible: !!flag,
-    });
-  };
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'rule/add',
-      payload: {
-        description: fields.desc,
-      },
-    });
-
-    message.success('添加成功');
-    this.setState({
-      modalVisible: false,
-    });
-  };
-
   renderSimpleForm() {
-    const { form } = this.props;
+    const { form, categoryTreeData } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="商品名称">
-              {getFieldDecorator('no')(<Input placeholder="请输入" />)}
+            <FormItem label="产品名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="上架状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>
+            <FormItem label="产品类别">
+              {getFieldDecorator('categorySn')(
+                <TreeSelect
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={categoryTreeData}
+                  placeholder="请选择"
+                />
               )}
             </FormItem>
           </Col>
@@ -239,32 +215,32 @@ export default class TableList extends PureComponent {
   }
 
   renderAdvancedForm() {
-    const { form } = this.props;
+    const { form, categoryTreeData, brandArray, productStatusArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="商品ID">
-              {getFieldDecorator('no')(<Input placeholder="请输入" />)}
+            <FormItem label="产品名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="产品类别">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">茶品</Option>
-                  <Option value="1">茶器</Option>
-                </Select>
+              {getFieldDecorator('categorySn')(
+                <TreeSelect
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={categoryTreeData}
+                  placeholder="请选择"
+                />
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="商标">
-              {getFieldDecorator('status3')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">玉德芳</Option>
-                  <Option value="1">孝文家茶</Option>
+            <FormItem label="品牌">
+              {getFieldDecorator('brandId')(
+                <Select placeholder="请选择品牌">
+                  {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
                 </Select>
               )}
             </FormItem>
@@ -272,25 +248,14 @@ export default class TableList extends PureComponent {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="商品名称">
-              {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="更新日期">
-              {getFieldDecorator('date')(
-                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="上架状态">
-              {getFieldDecorator('status4')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">上架</Option>
-                  <Option value="1">下架</Option>
-                </Select>
-              )}
+            <FormItem label="产品状态" help="单纯就是秀一下这里可以放注解">
+              <div>
+                {getFieldDecorator('productStatus')(
+                  <Radio.Group>
+                    {productStatusArray.map(productStatus => <Radio value={productStatus.value}>{productStatus.labelZhCn}</Radio>)}
+                  </Radio.Group>
+                )}
+              </div>
             </FormItem>
           </Col>
         </Row>
@@ -318,27 +283,28 @@ export default class TableList extends PureComponent {
 
   render() {
     const {
-      rule: { data },
+      product: { data },
+      productStatusArray,
       loading,
     } = this.props;
-    const { selectedRows, modalVisible } = this.state;
+    const { selectedRows } = this.state;
 
     const columns = [
       {
-        title: '商品ID',
-        dataIndex: 'no',
+        title: '商品条形码',
+        dataIndex: 'barCode',
       },
       {
         title: '产品类别',
-        dataIndex: 'description',
+        dataIndex: 'categoryName',
       },
       {
-        title: '商标',
-        dataIndex: 'description',
+        title: '品牌',
+        dataIndex: 'brandName',
       },
       {
-        title: '商品名称',
-        dataIndex: 'description',
+        title: '产品名称',
+        dataIndex: 'name',
       },
       {
         title: '商品描述',
@@ -349,28 +315,32 @@ export default class TableList extends PureComponent {
         dataIndex: 'description',
       },
       {
-        title: '包装规格',
-        dataIndex: 'description',
+        title: '平均成本',
+        dataIndex: 'averageCost',
+      },
+      {
+        title: '产品售价',
+        dataIndex: 'price',
+      },
+      {
+        title: '产品保固期',
+        dataIndex: 'shelfLife',
       },
       {
         title: '状态',
-        dataIndex: 'status',
+        dataIndex: 'productStatus',
         filters: [
           {
-            text: status[0],
+            text: productStatusArray[0],
             value: 0,
           },
           {
-            text: status[1],
+            text: productStatusArray[1],
             value: 1,
           },
           {
-            text: status[2],
+            text: productStatusArray[2],
             value: 2,
-          },
-          {
-            text: status[3],
-            value: 3,
           },
         ],
         onFilter: (value, record) => record.status.toString() === value,
@@ -403,18 +373,22 @@ export default class TableList extends PureComponent {
       </Menu>
     );
 
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-
     return (
       <PageHeaderLayout title="商品管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => {
+                  const { dispatch } = this.props;
+                  dispatch(
+                    routerRedux.push({ pathname: '/product/add' })
+                  );
+                }}
+              >
                 新建
               </Button>
               {selectedRows.length > 0 && (
@@ -438,7 +412,6 @@ export default class TableList extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
       </PageHeaderLayout>
     );
   }

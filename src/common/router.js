@@ -82,7 +82,7 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
     '/product/manage': {
-      component: dynamicWrapper(app, [], () => import('../routes/product/Manage')),
+      component: dynamicWrapper(app, ['dictionary', 'product', 'brand'], () => import('../routes/product/Manage')),
     },
     '/product/add': {
       component: dynamicWrapper(app, ['dictionary', 'product', 'brand'], () =>

@@ -8,6 +8,7 @@ export default {
     shelfLifeArray:[],
     productStatusArray:[],
     specificationArray:[],
+    operationTypeArray:[],
   },
 
   effects: {

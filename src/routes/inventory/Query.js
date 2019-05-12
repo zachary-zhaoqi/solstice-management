@@ -28,12 +28,6 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const statusMap = {
-  '上架': 'success',
-  '缺货': 'error',
-  '绝版': 'processing',
-  '默认': 'default',
-}
 
 @connect(({
   product, brand, dictionary, rule, loading }) => ({
@@ -84,6 +78,8 @@ export default class TableList extends PureComponent {
       type: 'product/queryProduct',
       payload: {},
     });
+
+    
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {

@@ -17,6 +17,7 @@ import {
   message,
   Popconfirm,
   Badge,
+  DatePicker,
   Divider,
 } from 'antd';
 import { routerRedux } from 'dva/router';
@@ -25,6 +26,8 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './Manage.less';
 
+const { RangePicker } = DatePicker;
+
 const FormItem = Form.Item;
 const { Option } = Select;
 const getValue = obj =>
@@ -32,16 +35,11 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 
-@connect(({
-  product, brand, dictionary, rule, loading }) => ({
-    rule,
-    product,
-    categoryTreeData: dictionary.categoryTreeData,
-    shelfLifeArray: dictionary.shelfLifeArray,
-    productStatusArray: dictionary.productStatusArray,
-    brandArray: brand.brandArray,
-    loading: loading.models.rule,
-  }))
+@connect(({ dictionary, product, loading }) => ({
+  product,
+  operationTypeArray: dictionary.operationTypeArray,
+  loading: loading.models.rule,
+}))
 @Form.create()
 export default class TableList extends PureComponent {
   state = {
@@ -54,15 +52,8 @@ export default class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'brand/getTotalBrand',
-    });
-
-    dispatch({
-      type: 'dictionary/getCategoryTree',
-    });
-
-    dispatch({
-      type: 'dictionary/getProductStatusArray',
+      type: 'dictionary/getDataDictionary',
+      payload: { key: 'operationType' },
     });
   }
 
@@ -129,7 +120,7 @@ export default class TableList extends PureComponent {
   }
 
   handleMenuClick = e => {
-    const { dispatch,form } = this.props;
+    const { dispatch, form } = this.props;
     const { selectedRows } = this.state;
 
     if (!selectedRows) return;
@@ -144,23 +135,23 @@ export default class TableList extends PureComponent {
             this.setState({
               selectedRows: [],
             });
-            if(response.success){
+            if (response.success) {
               message.success(response.message);
-            }else{
+            } else {
               message.error(response.message);
             }
             form.validateFields((err, fieldsValue) => {
               if (err) return;
-        
+
               const values = {
                 ...fieldsValue,
                 updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
               };
-        
+
               this.setState({
                 formValues: values,
               });
-        
+
               dispatch({
                 type: 'product/queryProduct',
                 payload: values,
@@ -168,7 +159,7 @@ export default class TableList extends PureComponent {
             });
           },
         });
-     
+
         break;
       }
       default:
@@ -207,24 +198,22 @@ export default class TableList extends PureComponent {
   };
 
   renderSimpleForm() {
-    const { form, categoryTreeData } = this.props;
+    const { form, operationTypeArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="产品名称">
+            <FormItem label="库存批次号">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="产品类别">
+            <FormItem label="操作类型">
               {getFieldDecorator('categorySn')(
-                <TreeSelect
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryTreeData}
-                  placeholder="请选择"
-                />
+                <Select placeholder="请选择">
+                  {operationTypeArray.map(operationType => <Option key={operationType.value}>{operationType.labelZhCn}</Option>)}
+                </Select>
               )}
             </FormItem>
           </Col>
@@ -247,46 +236,38 @@ export default class TableList extends PureComponent {
   }
 
   renderAdvancedForm() {
-    const { form, categoryTreeData, brandArray, productStatusArray } = this.props;
+    const { form, operationTypeArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="产品名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            <FormItem label="库存批次号">
+              {getFieldDecorator('batchSn')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="产品类别">
-              {getFieldDecorator('categorySn')(
-                <TreeSelect
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryTreeData}
-                  placeholder="请选择"
-                />
+            <FormItem label="操作类型">
+              {getFieldDecorator('operationType')(
+                <Select placeholder="请选择">
+                  {operationTypeArray.map(operationType => <Option key={operationType.value}>{operationType.labelZhCn}</Option>)}
+                </Select>
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brandId')(
-                <Select placeholder="请选择品牌">
-                  {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
-                </Select>
+            <FormItem label="操作时间">
+              {getFieldDecorator('creatTimeRange')(
+                <RangePicker />
               )}
             </FormItem>
           </Col>
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="产品状态">
+            <FormItem label="关联ID">
               <div>
-                {getFieldDecorator('productStatus')(
-                  <Radio.Group>
-                    {productStatusArray.map(productStatus => <Radio value={productStatus.value}>{productStatus.labelZhCn}</Radio>)}
-                  </Radio.Group>
-                )}
+                {getFieldDecorator('correlationOperationId')(<Input placeholder="请输入" />)}
               </div>
             </FormItem>
           </Col>
@@ -368,7 +349,7 @@ export default class TableList extends PureComponent {
         render: (record) => (
           <Fragment>
             <Popconfirm title="你确定要覆盖该操作吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">
-            <a>覆盖</a>
+              <a>覆盖</a>
             </Popconfirm>
             <Divider type="vertical" />
             <Popconfirm title="你确定要删掉该商品吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">

@@ -42,7 +42,7 @@ const statusMap = {
   product, brand, dictionary, rule, loading }) => ({
     rule,
     product,
-    categoryTreeData: dictionary.categoryTreeData,
+    categoryArray: dictionary.categoryArray,
     shelfLifeArray: dictionary.shelfLifeArray,
     productStatusArray: dictionary.productStatusArray,
     specificationArray:dictionary.specificationArray,
@@ -65,11 +65,18 @@ export default class TableList extends PureComponent {
     });
 
     dispatch({
-      type: 'dictionary/getCategoryTree',
+      type: 'dictionary/getDataDictionary',
+      payload:{ key: 'category', tree: true },
     });
 
     dispatch({
-      type: 'dictionary/getProductStatusArray',
+      type: 'dictionary/getDataDictionary',
+      payload:{key:'productStatus'},
+    });
+
+    dispatch({
+      type: 'dictionary/getDataDictionary',
+      payload:{key:'specification'},
     });
   }
 
@@ -236,7 +243,7 @@ export default class TableList extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="产品包装规格">
               {getFieldDecorator('specification')(
-                <Select placeholder="请选择品牌">
+                <Select placeholder="请选择">
                   {specificationArray.map(specification => <Option key={specification.value}>{specification.labelZhCn}</Option>)}
                 </Select>
               )}
@@ -261,7 +268,7 @@ export default class TableList extends PureComponent {
   }
 
   renderAdvancedForm() {
-    const { form, categoryTreeData, brandArray, productStatusArray } = this.props;
+    const { form, categoryArray, brandArray, productStatusArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -276,7 +283,7 @@ export default class TableList extends PureComponent {
               {getFieldDecorator('categorySn')(
                 <TreeSelect
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryTreeData}
+                  treeData={categoryArray}
                   placeholder="请选择"
                 />
               )}

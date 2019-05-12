@@ -120,3 +120,7 @@ export async function removeProduct(params) {
 export async function queryInventoryInfo(params) {
   return request(`/inventory/inventoryInfo?${stringify(params)}`)
 }
+
+export async function queryInventoryOperation(params) {
+  return request(`/inventory/inventoryOperation?${stringify(params)}`)
+}

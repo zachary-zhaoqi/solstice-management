@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import {saveProduct, removeProduct,queryInventoryInfo} from '../services/api';
+import {saveProduct, removeProduct,queryInventoryInfo,queryInventoryOperation} from '../services/api';
 
 export default {
   namespace: 'inventory',
@@ -7,6 +7,10 @@ export default {
   state: {
     status: undefined,
     infoData: {
+      list: [],
+      pagination: {},
+    },
+    operationData: {
       list: [],
       pagination: {},
     },
@@ -38,19 +42,35 @@ export default {
         callback(response);
       }
     },
+
+    *queryInventoryOperation({ payload }, { call, put }) {
+      const response = yield call(queryInventoryOperation, payload);
+      yield put({
+        type: 'savaInventoryOperation',
+        payload: response.data || [],
+      });
+    },
   },
 
   reducers: {
     savaInventoryInfoData(state, { payload }) {
-
       const nowdata = {
         list: payload,
         pagination: {},
       }
-
       return {
         ...state,
         infoData: nowdata,
+      }
+    },
+    savaInventoryOperation(state, { payload }) {
+      const nowdata = {
+        list: payload,
+        pagination: {},
+      }
+      return {
+        ...state,
+        operationData: nowdata,
       }
     },
   },

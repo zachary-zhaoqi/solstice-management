@@ -34,7 +34,8 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-@connect(({ dictionary, product, loading }) => ({
+@connect(({ dictionary, inventory, product, loading }) => ({
+  inventory,
   product,
   operationTypeArray: dictionary.operationTypeArray,
   loading: loading.models.rule,
@@ -59,10 +60,10 @@ export default class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
 
-    dispatch({
-      type: 'product/queryProduct',
-      payload: {},
-    });
+    // dispatch({
+    //   type: 'inventory/queryInventoryOperation',
+    //   payload: {},
+    // });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -295,7 +296,7 @@ export default class TableList extends PureComponent {
 
   render() {
     const {
-      product: { data },
+      inventory: { operationData },
       loading,
     } = this.props;
     const { selectedRows } = this.state;
@@ -398,7 +399,7 @@ export default class TableList extends PureComponent {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              data={operationData}
               scroll={{ x: 1500, y: 300 }}
               columns={columns}
               onSelectRow={this.handleSelectRows}

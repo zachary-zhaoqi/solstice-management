@@ -30,9 +30,8 @@ const getValue = obj =>
     .join(',');
 
 @connect(({
-  product, brand, dictionary, rule, loading }) => ({
-    rule,
-    product,
+  inventory, brand, dictionary, loading }) => ({
+    inventory,
     categoryArray: dictionary.categoryArray,
     shelfLifeArray: dictionary.shelfLifeArray,
     productStatusArray: dictionary.productStatusArray,
@@ -74,12 +73,12 @@ export default class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
 
-    dispatch({
-      type: 'product/queryProduct',
-      payload: {},
-    });
+    // dispatch({
+    //   type: 'inventory/queryInventoryInfo',
+    //   payload: {},
+    // });
 
-    
+
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -158,8 +157,8 @@ export default class TableList extends PureComponent {
         formValues: values,
       });
 
-      console.log('inventory handleSearch values',values);
-      
+      console.log('inventory handleSearch values', values);
+
       dispatch({
         type: 'product/queryProduct',
         payload: values,
@@ -284,23 +283,22 @@ export default class TableList extends PureComponent {
 
   render() {
     const {
-      product: { data },
+      inventory: { infoData },
       loading,
     } = this.props;
     const { selectedRows } = this.state;
 
     const columns = [
       {
-        title: '产品名称',
-        dataIndex: 'name',
-        fixed: 'left',
-        width: 100,
-        key: 'id',
-      },
-      {
         title: '库存批次号',
         fixed: 'left',
         dataIndex: 'batchSn',
+      },
+      {
+        title: '产品名称',
+        dataIndex: 'name',
+        fixed: 'left',
+        key: 'name',
       },
       {
         title: '商品条形码',
@@ -323,15 +321,7 @@ export default class TableList extends PureComponent {
         dataIndex: 'number',
       },
       {
-        title: '更新时间',
-        dataIndex: 'modifyTime',
-        sorter: true,
-        render(val) {
-          return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
-        },
-      },
-      {
-        title: '更新时间',
+        title: '创建时间',
         dataIndex: 'creatTime',
         sorter: true,
         render(val) {
@@ -356,8 +346,8 @@ export default class TableList extends PureComponent {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
-              scroll={{ x: 1500, y: 300 }}
+              data={infoData}
+              scroll={{ x: 3000, y: 300 }}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

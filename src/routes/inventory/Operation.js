@@ -34,7 +34,6 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-
 @connect(({ dictionary, product, loading }) => ({
   product,
   operationTypeArray: dictionary.operationTypeArray,

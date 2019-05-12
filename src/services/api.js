@@ -96,6 +96,7 @@ export async function getBrand(params) {
   return request(`/brand/brandInfo?${stringify(params)}`)
 }
 
+// 商品相关操作
 export async function saveProduct(params) {
   return request(`product/productInfo/${params.name}`, {
     method: 'POST',
@@ -112,4 +113,10 @@ export async function removeProduct(params) {
     method: 'DELETE',
     body: params,
   });
+}
+
+
+// 库存信息
+export async function queryInventoryInfo(params) {
+  return request(`/inventory/inventoryInfo?${stringify(params)}`)
 }

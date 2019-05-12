@@ -42,7 +42,8 @@ const statusMap = {
   product, brand, dictionary, rule, loading }) => ({
     rule,
     product,
-    categoryArray: dictionary.categoryArray,
+    categoryTreeData: dictionary.categoryTreeData,
+    shelfLifeArray: dictionary.shelfLifeArray,
     productStatusArray: dictionary.productStatusArray,
     brandArray: brand.brandArray,
     loading: loading.models.rule,
@@ -63,13 +64,11 @@ export default class TableList extends PureComponent {
     });
 
     dispatch({
-      type: 'dictionary/getDataDictionary',
-      payload:{ key: 'category', tree: true },
+      type: 'dictionary/getCategoryTree',
     });
 
     dispatch({
-      type: 'dictionary/getDataDictionary',
-      payload:{key:'productStatus'},
+      type: 'dictionary/getProductStatusArray',
     });
   }
 
@@ -223,7 +222,7 @@ export default class TableList extends PureComponent {
   };
 
   renderSimpleForm() {
-    const { form, categoryArray } = this.props;
+    const { form, categoryTreeData } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -238,7 +237,7 @@ export default class TableList extends PureComponent {
               {getFieldDecorator('categorySn')(
                 <TreeSelect
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryArray}
+                  treeData={categoryTreeData}
                   placeholder="请选择"
                 />
               )}
@@ -263,7 +262,7 @@ export default class TableList extends PureComponent {
   }
 
   renderAdvancedForm() {
-    const { form, categoryArray, brandArray, productStatusArray } = this.props;
+    const { form, categoryTreeData, brandArray, productStatusArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -278,7 +277,7 @@ export default class TableList extends PureComponent {
               {getFieldDecorator('categorySn')(
                 <TreeSelect
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryArray}
+                  treeData={categoryTreeData}
                   placeholder="请选择"
                 />
               )}

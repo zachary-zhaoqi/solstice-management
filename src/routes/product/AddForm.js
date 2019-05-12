@@ -24,7 +24,7 @@ const { TextArea } = Input;
 
 @connect(({ brand, dictionary, loading }) => ({
   submitting: loading.effects['form/submitRegularForm'],
-  categoryTreeData: dictionary.categoryTreeData,
+  categoryArray: dictionary.categoryArray,
   brandArray: brand.brandArray,
   shelfLifeArray: dictionary.shelfLifeArray,
   productStatusArray: dictionary.productStatusArray,
@@ -40,16 +40,20 @@ export default class BasicForms extends PureComponent {
     });
 
     dispatch({
-      type: 'dictionary/getCategoryTree',
+      type: 'dictionary/getDataDictionary',
+      payload:{ key: 'category', tree: true },
     });
 
     dispatch({
-      type: 'dictionary/getShelfLifeArray',
+      type: 'dictionary/getDataDictionary',
+      payload:{key:'productStatus'},
     });
 
     dispatch({
-      type: 'dictionary/getProductStatusArray',
+      type: 'dictionary/getDataDictionary',
+      payload:{key:'shelfLifeArray'},
     });
+
   }
 
   handleSubmit = e => {
@@ -67,7 +71,7 @@ export default class BasicForms extends PureComponent {
   };
 
   render() {
-    const { submitting, form, categoryTreeData, brandArray, shelfLifeArray, productStatusArray } = this.props;
+    const { submitting, form, categoryArray, brandArray, shelfLifeArray, productStatusArray } = this.props;
     const { getFieldDecorator } = form;
     console.log("addForm render props", this.props);
     const formItemLayout = {
@@ -108,7 +112,7 @@ export default class BasicForms extends PureComponent {
                   })(
                     <TreeSelect
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      treeData={categoryTreeData}
+                      treeData={categoryArray}
                       placeholder="请选择类别"
                     />
                   )}

@@ -3,22 +3,41 @@ import { isUrl } from '../utils/utils';
 const menuData = [
   {
     name: '商品管理',
-    icon: 'profile',
+    icon: 'table',
     path: 'product',
     children: [
       {
         name: '商品管理',
         path: 'manage',
+        authority: 'admin',
       },
       {
         name: '新增商品',
         path: 'add',
+        authority: 'admin',
       },
-      // {
-      //   name: '高级表单',
-      //   authority: 'admin',
-      //   path: 'advanced-form',
-      // },
+    ],
+  },
+  {
+    name: '库存管理',
+    icon: 'table',
+    path: 'inventory',
+    children: [
+      {
+        name: '库存查询',
+        path: 'query',
+        authority: 'admin',
+      },
+      {
+        name: '出库',
+        path: 'push',
+        authority: 'admin',
+      },
+      {
+        name: '入库',
+        path: 'pull',
+        authority: 'admin',
+      },
     ],
   },
   /*   {

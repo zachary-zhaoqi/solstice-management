@@ -4,17 +4,22 @@ export default {
   namespace: 'dictionary',
 
   state: {
-    categoryTreeData: [],
+    categoryArray: [],
     shelfLifeArray:[],
     productStatusArray:[],
+    specificationArray:[],
   },
 
   effects: {
-    *getCategoryTree(_, { call, put }) {
-      const response = yield call(getDataDictionary, { key: 'category', tree: true });
+    *getDataDictionary({payload}, { call, put }) {
+      const response = yield call(getDataDictionary,payload);
+      const {key}=payload;
+      const arrayName=`${key}Array`;
       yield put({
-        type: 'saveCategoryTreeData',
-        payload: response.data,
+        type: 'saveDataDictionary',
+        payload: {
+          [arrayName]:response.data,
+        },
       });
     },
 
@@ -36,6 +41,14 @@ export default {
   },
 
   reducers: {
+    saveDataDictionary(state,{payload}){
+      console.log('---------------------',payload);
+      return{
+        ...state,
+        ...payload,
+      }
+    },
+
     saveCategoryTreeData(state, { payload }) {
       return {
         ...state,

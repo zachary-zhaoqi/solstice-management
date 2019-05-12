@@ -42,8 +42,10 @@ const statusMap = {
   product, brand, dictionary, rule, loading }) => ({
     rule,
     product,
-    categoryArray: dictionary.categoryArray,
+    categoryTreeData: dictionary.categoryTreeData,
+    shelfLifeArray: dictionary.shelfLifeArray,
     productStatusArray: dictionary.productStatusArray,
+    specificationArray:dictionary.specificationArray,
     brandArray: brand.brandArray,
     loading: loading.models.rule,
   }))
@@ -63,13 +65,11 @@ export default class TableList extends PureComponent {
     });
 
     dispatch({
-      type: 'dictionary/getDataDictionary',
-      payload:{ key: 'category', tree: true },
+      type: 'dictionary/getCategoryTree',
     });
 
     dispatch({
-      type: 'dictionary/getDataDictionary',
-      payload:{key:'productStatus'},
+      type: 'dictionary/getProductStatusArray',
     });
   }
 
@@ -136,7 +136,7 @@ export default class TableList extends PureComponent {
   }
 
   handleMenuClick = e => {
-    const { dispatch,form } = this.props;
+    const { dispatch, form } = this.props;
     const { selectedRows } = this.state;
 
     if (!selectedRows) return;
@@ -151,23 +151,23 @@ export default class TableList extends PureComponent {
             this.setState({
               selectedRows: [],
             });
-            if(response.success){
+            if (response.success) {
               message.success(response.message);
-            }else{
+            } else {
               message.error(response.message);
             }
             form.validateFields((err, fieldsValue) => {
               if (err) return;
-        
+
               const values = {
                 ...fieldsValue,
                 updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
               };
-        
+
               this.setState({
                 formValues: values,
               });
-        
+
               dispatch({
                 type: 'product/queryProduct',
                 payload: values,
@@ -184,7 +184,7 @@ export default class TableList extends PureComponent {
         //   }
         // });
 
-     
+
         break;
       }
       default:
@@ -223,7 +223,7 @@ export default class TableList extends PureComponent {
   };
 
   renderSimpleForm() {
-    const { form, categoryArray } = this.props;
+    const { form, specificationArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -234,13 +234,11 @@ export default class TableList extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="产品类别">
-              {getFieldDecorator('categorySn')(
-                <TreeSelect
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryArray}
-                  placeholder="请选择"
-                />
+            <FormItem label="产品包装规格">
+              {getFieldDecorator('specification')(
+                <Select placeholder="请选择品牌">
+                  {specificationArray.map(specification => <Option key={specification.value}>{specification.labelZhCn}</Option>)}
+                </Select>
               )}
             </FormItem>
           </Col>
@@ -263,7 +261,7 @@ export default class TableList extends PureComponent {
   }
 
   renderAdvancedForm() {
-    const { form, categoryArray, brandArray, productStatusArray } = this.props;
+    const { form, categoryTreeData, brandArray, productStatusArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -278,7 +276,7 @@ export default class TableList extends PureComponent {
               {getFieldDecorator('categorySn')(
                 <TreeSelect
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={categoryArray}
+                  treeData={categoryTreeData}
                   placeholder="请选择"
                 />
               )}
@@ -433,23 +431,11 @@ export default class TableList extends PureComponent {
     );
 
     return (
-      <PageHeaderLayout title="商品管理">
+      <PageHeaderLayout title="库存查询">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => {
-                  const { dispatch } = this.props;
-                  dispatch(
-                    routerRedux.push({ pathname: '/product/add' })
-                  );
-                }}
-              >
-                新建
-              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   <Button>批量下架</Button>

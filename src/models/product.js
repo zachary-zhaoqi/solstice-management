@@ -26,7 +26,6 @@ export default {
 
     *queryProduct({ payload }, { call, put }) {
       const response = yield call(queryProduct, payload);
-      console.log("prodeuct model effects queryProduct response", response);
       yield put({
         type: 'savaProductList',
         payload: response.data || [],
@@ -34,10 +33,7 @@ export default {
     },
 
     *removeProduct({ payload,callback }, { call, put }) {
-      console.log("model product removeProduct payload", payload);
       const response = yield call(removeProduct, payload);
-      console.log("prodeuct model effects removeProduct response", response);
-      
       if (callback && typeof callback === 'function') {
         callback(response);
     }

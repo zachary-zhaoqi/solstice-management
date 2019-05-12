@@ -29,13 +29,8 @@ const menuData = [
         authority: 'admin',
       },
       {
-        name: '出库',
-        path: 'push',
-        authority: 'admin',
-      },
-      {
-        name: '入库',
-        path: 'pull',
+        name: '库存操作',
+        path: 'operation',
         authority: 'admin',
       },
     ],

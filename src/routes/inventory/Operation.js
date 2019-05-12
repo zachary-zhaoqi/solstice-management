@@ -31,12 +31,6 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const statusMap = {
-  '上架': 'success',
-  '缺货': 'error',
-  '绝版': 'processing',
-  '默认': 'default',
-}
 
 @connect(({
   product, brand, dictionary, rule, loading }) => ({
@@ -174,15 +168,6 @@ export default class TableList extends PureComponent {
             });
           },
         });
-        // .then((res)=>{
-        //   console.log("handleMenuClick remove res",res)
-        //   if (res) {
-        //     message.success('修改成功')
-        //   } else {
-        //     message.error('修改失败')
-        //   }
-        // });
-
      
         break;
       }
@@ -331,7 +316,6 @@ export default class TableList extends PureComponent {
   render() {
     const {
       product: { data },
-      productStatusArray,
       loading,
     } = this.props;
     const { selectedRows } = this.state;
@@ -339,82 +323,53 @@ export default class TableList extends PureComponent {
     console.log("manage render props", this.props);
     const columns = [
       {
-        title: '产品名称',
-        dataIndex: 'name',
+        title: 'ID',
+        dataIndex: 'inventoryId',
         fixed: 'left',
-        width: 100,
-        key: 'id',
+        key: 'inventoryId',
       },
       {
-        title: '商品条形码',
-        dataIndex: 'barCode',
+        title: '库存批次号',
+        dataIndex: 'batchSn',
+        fixed: 'left',
+        key: 'batchSn',
       },
       {
-        title: '产品类别',
-        dataIndex: 'categoryName',
+        title: '操作类型',
+        dataIndex: 'operationType',
       },
       {
-        title: '品牌',
-        dataIndex: 'brandName',
+        title: '操作数量',
+        dataIndex: 'number',
       },
       {
-        title: '商品描述',
-        dataIndex: 'description',
+        title: '执行后库存数量',
+        dataIndex: 'recordNumber',
       },
       {
-        title: '商品图片',
-        dataIndex: 'description',
+        title: '关联ID',
+        dataIndex: 'correlationOperationId',
       },
       {
-        title: '平均成本',
-        dataIndex: 'averageCost',
-      },
-      {
-        title: '产品售价',
-        dataIndex: 'price',
-      },
-      {
-        title: '产品保固期',
-        dataIndex: 'shelfLife',
-      },
-      {
-        title: '状态',
-        dataIndex: 'productStatus',
-        width: 100,
-        // filters: [
-        //   {
-        //     text:productStatusArray.length===0?"":productStatusArray[0].labelZhCn,
-        //     value: 0,
-        //   },
-        //   {
-        //     text:productStatusArray.length===0?"":productStatusArray[1].labelZhCn,
-        //     value: 1,
-        //   },
-        //   {
-        //     text:productStatusArray.length===0?"":productStatusArray[2].labelZhCn,
-        //     value: 2,
-        //   },
-        // ],
-        // onFilter: (value, record) => record.status.toString() === value,
-        render(val) {
-
-          return <Badge status={statusMap[val]} text={val} />;
-        },
-      },
-      {
-        title: '更新时间',
-        dataIndex: 'modifyTime',
+        title: '创建时间',
+        dataIndex: 'createTime',
         sorter: true,
         render(val) {
           return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
         },
       },
       {
+        title: '操作人',
+        dataIndex: 'createName',
+      },
+      {
         title: '操作',
         fixed: 'right',
         render: (record) => (
           <Fragment>
-            <a href="">修改</a>
+            <Popconfirm title="你确定要覆盖该操作吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">
+            <a>覆盖</a>
+            </Popconfirm>
             <Divider type="vertical" />
             <Popconfirm title="你确定要删掉该商品吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">
               <a>删除</a>
@@ -432,7 +387,7 @@ export default class TableList extends PureComponent {
     );
 
     return (
-      <PageHeaderLayout title="商品管理">
+      <PageHeaderLayout title="入库&出库">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>

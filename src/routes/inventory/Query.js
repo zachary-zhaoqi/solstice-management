@@ -9,21 +9,18 @@ import {
   Input,
   Select,
   TreeSelect,
-  Radio,
   Icon,
   Button,
-  Dropdown,
-  Menu,
   message,
-  Popconfirm,
-  Badge,
-  Divider,
+  DatePicker,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import StandardTable from 'components/StandardTable';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './Manage.less';
+
+const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -45,7 +42,7 @@ const statusMap = {
     categoryArray: dictionary.categoryArray,
     shelfLifeArray: dictionary.shelfLifeArray,
     productStatusArray: dictionary.productStatusArray,
-    specificationArray:dictionary.specificationArray,
+    specificationArray: dictionary.specificationArray,
     brandArray: brand.brandArray,
     loading: loading.models.rule,
   }))
@@ -66,17 +63,17 @@ export default class TableList extends PureComponent {
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{ key: 'category', tree: true },
+      payload: { key: 'category', tree: true },
     });
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{key:'productStatus'},
+      payload: { key: 'productStatus' },
     });
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{key:'specification'},
+      payload: { key: 'specification' },
     });
   }
 
@@ -142,63 +139,6 @@ export default class TableList extends PureComponent {
     });
   }
 
-  handleMenuClick = e => {
-    const { dispatch, form } = this.props;
-    const { selectedRows } = this.state;
-
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove': {
-        const idList = selectedRows.map(row => row.id);
-        dispatch({
-          type: 'product/removeProduct',
-          payload: idList,
-          callback: (response) => {
-            this.setState({
-              selectedRows: [],
-            });
-            if (response.success) {
-              message.success(response.message);
-            } else {
-              message.error(response.message);
-            }
-            form.validateFields((err, fieldsValue) => {
-              if (err) return;
-
-              const values = {
-                ...fieldsValue,
-                updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-              };
-
-              this.setState({
-                formValues: values,
-              });
-
-              dispatch({
-                type: 'product/queryProduct',
-                payload: values,
-              });
-            });
-          },
-        });
-        // .then((res)=>{
-        //   console.log("handleMenuClick remove res",res)
-        //   if (res) {
-        //     message.success('修改成功')
-        //   } else {
-        //     message.error('修改失败')
-        //   }
-        // });
-
-
-        break;
-      }
-      default:
-        break;
-    }
-  };
-
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
@@ -222,6 +162,8 @@ export default class TableList extends PureComponent {
         formValues: values,
       });
 
+      console.log('inventory handleSearch values',values);
+      
       dispatch({
         type: 'product/queryProduct',
         payload: values,
@@ -268,7 +210,7 @@ export default class TableList extends PureComponent {
   }
 
   renderAdvancedForm() {
-    const { form, categoryArray, brandArray, productStatusArray } = this.props;
+    const { form, categoryArray, brandArray, specificationArray } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -276,6 +218,31 @@ export default class TableList extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="产品名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="条形码号">
+              {getFieldDecorator('barCode')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="产品包装规格">
+              {getFieldDecorator('specification')(
+                <Select placeholder="请选择">
+                  {specificationArray.map(specification => <Option key={specification.value}>{specification.labelZhCn}</Option>)}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="品&emsp;&emsp;牌">
+              {getFieldDecorator('brandId')(
+                <Select placeholder="请选择品牌">
+                  {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
+                </Select>
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -290,25 +257,10 @@ export default class TableList extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brandId')(
-                <Select placeholder="请选择品牌">
-                  {brandArray.map(brand => <Option key={brand.id}>{brand.name}</Option>)}
-                </Select>
+            <FormItem label="创建日期">
+              {getFieldDecorator('creatTimeRange')(
+                <RangePicker />
               )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="产品状态">
-              <div>
-                {getFieldDecorator('productStatus')(
-                  <Radio.Group>
-                    {productStatusArray.map(productStatus => <Radio value={productStatus.value}>{productStatus.labelZhCn}</Radio>)}
-                  </Radio.Group>
-                )}
-              </div>
             </FormItem>
           </Col>
         </Row>
@@ -337,12 +289,10 @@ export default class TableList extends PureComponent {
   render() {
     const {
       product: { data },
-      productStatusArray,
       loading,
     } = this.props;
     const { selectedRows } = this.state;
 
-    console.log("manage render props", this.props);
     const columns = [
       {
         title: '产品名称',
@@ -350,6 +300,11 @@ export default class TableList extends PureComponent {
         fixed: 'left',
         width: 100,
         key: 'id',
+      },
+      {
+        title: '库存批次号',
+        fixed: 'left',
+        dataIndex: 'batchSn',
       },
       {
         title: '商品条形码',
@@ -364,48 +319,12 @@ export default class TableList extends PureComponent {
         dataIndex: 'brandName',
       },
       {
-        title: '商品描述',
-        dataIndex: 'description',
+        title: '产品包装规格',
+        dataIndex: 'specification',
       },
       {
-        title: '商品图片',
-        dataIndex: 'description',
-      },
-      {
-        title: '平均成本',
-        dataIndex: 'averageCost',
-      },
-      {
-        title: '产品售价',
-        dataIndex: 'price',
-      },
-      {
-        title: '产品保固期',
-        dataIndex: 'shelfLife',
-      },
-      {
-        title: '状态',
-        dataIndex: 'productStatus',
-        width: 100,
-        // filters: [
-        //   {
-        //     text:productStatusArray.length===0?"":productStatusArray[0].labelZhCn,
-        //     value: 0,
-        //   },
-        //   {
-        //     text:productStatusArray.length===0?"":productStatusArray[1].labelZhCn,
-        //     value: 1,
-        //   },
-        //   {
-        //     text:productStatusArray.length===0?"":productStatusArray[2].labelZhCn,
-        //     value: 2,
-        //   },
-        // ],
-        // onFilter: (value, record) => record.status.toString() === value,
-        render(val) {
-
-          return <Badge status={statusMap[val]} text={val} />;
-        },
+        title: '库存数量',
+        dataIndex: 'number',
       },
       {
         title: '更新时间',
@@ -416,26 +335,15 @@ export default class TableList extends PureComponent {
         },
       },
       {
-        title: '操作',
-        fixed: 'right',
-        render: (record) => (
-          <Fragment>
-            <a href="">修改</a>
-            <Divider type="vertical" />
-            <Popconfirm title="你确定要删掉该商品吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">
-              <a>删除</a>
-            </Popconfirm>
-          </Fragment>
-        ),
+        title: '更新时间',
+        dataIndex: 'creatTime',
+        sorter: true,
+        render(val) {
+          return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
+        },
       },
     ];
 
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量上架</Menu.Item>
-      </Menu>
-    );
 
     return (
       <PageHeaderLayout title="库存查询">
@@ -445,12 +353,7 @@ export default class TableList extends PureComponent {
             <div className={styles.tableListOperator}>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button>批量下架</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
+                  <Button>冻结</Button>
                 </span>
               )}
             </div>

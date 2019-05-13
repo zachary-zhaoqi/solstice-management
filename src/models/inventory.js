@@ -14,6 +14,7 @@ export default {
       list: [],
       pagination: {},
     },
+    inventoryInfoBatchSnArray:[],
   },
 
   effects: {
@@ -50,6 +51,15 @@ export default {
         payload: response.data || [],
       });
     },
+
+    *queryInventoryInfoBatchSn({payload},{call,put}){
+      const response = yield call(queryInventoryInfo, payload);
+      const InventoryInfoBatchSnArray=response.data.map(a=>a.BatchSn);
+      yield put({
+        type: 'savaInventoryInfoBatchSnArray',
+        payload:  InventoryInfoBatchSnArray|| [],
+      });
+    },
   },
 
   reducers: {
@@ -71,6 +81,12 @@ export default {
       return {
         ...state,
         operationData: nowdata,
+      }
+    },
+    savaInventoryInfoBatchSnArray(state, { payload }) {
+      return {
+        ...state,
+        inventoryInfoBatchSnArray: payload,
       }
     },
   },

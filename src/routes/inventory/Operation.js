@@ -8,19 +8,19 @@ import {
   Form,
   Input,
   Select,
-  TreeSelect,
-  Radio,
   Icon,
   Button,
   Dropdown,
+  InputNumber,
   Menu,
   message,
   Popconfirm,
   Badge,
+  Tooltip,
+  Modal,
   DatePicker,
   Divider,
 } from 'antd';
-import { routerRedux } from 'dva/router';
 import StandardTable from 'components/StandardTable';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
@@ -34,16 +34,131 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
+
+
+const CreateForm = Form.create()(props => {
+  const { modalVisible, form, handleAdd, handleModalVisible, handleonSearchBatchSn, inventoryInfoBatchSnArray, operationTypeArray } = props;
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handleAdd(fieldsValue);
+    });
+  };
+
+  const onSearchBatchSn = (value) => {
+    handleonSearchBatchSn({
+      'name': value,
+    })
+  }
+
+  return (
+    <Modal
+      title="新建库存操作"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Card
+        style={{ 'text-align': 'center' }}
+        bordered={false}
+      >
+        <Tooltip title="输入条件查询库存批次号">
+          <Input.Group compact>
+            <Select style={{ width: '25%' }} defaultValue="name">
+              <Option value="name">产品名称</Option>
+              {/* <Option value="barCode">条形码号</Option>
+              <Option value="brandName">品&emsp;&emsp;牌</Option>
+              <Option value="categoryName">产品类别</Option> */}
+            </Select>
+            <Input.Search
+              placeholder="请输入正确的值"
+              onSearch={value => onSearchBatchSn(value)}
+              style={{ width: '65%' }}
+            />
+          </Input.Group>
+        </Tooltip>
+      </Card>
+      <br />
+      <br />
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="库存批次号">
+        {form.getFieldDecorator('batchSn', {
+          rules: [{ required: true, message: '请选择库存批次' }],
+        })(
+          <Select
+            style={{ width: '100%' }}
+            dropdownRender={menu => (
+              <div>
+                {menu}
+                <Divider style={{ margin: '4px 0' }} />
+                <Popconfirm
+                  title="你确定要新建库存批次吗?"
+                  onConfirm={() => {
+                    console.log("sadkfljhsdalkfjh;hf;")
+                  }}
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <div style={{ padding: '8px', cursor: 'pointer' }}>
+                    <Icon type="plus" />
+                    新建一个库存批次
+                  </div>
+                </Popconfirm>
+
+              </div>
+            )}
+          >
+            {inventoryInfoBatchSnArray.map(BatchSn => <Option key={BatchSn}>{BatchSn}</Option>)}
+          </Select>,
+        )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="操作类型">
+        {form.getFieldDecorator('desc', {
+          rules: [{ required: true, message: '请输入操作类型' }],
+        })(
+          <Select
+            style={{ width: '100%' }}
+            placeholder="请选择"
+          >
+            {operationTypeArray.map(operationType => <Option key={operationType.value}>{operationType.labelZhCn}</Option>)}
+          </Select>
+        )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="操作数量">
+        {form.getFieldDecorator('desc', {
+          rules: [{ required: true, message: '请输入操作数量' }],
+        })(
+          <InputNumber
+            style={{ width: '100%' }}
+            min={1}
+            precision={0}
+          />
+        )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="关联ID">
+        {form.getFieldDecorator('desc')(
+          <Input
+            style={{ width: '100%' }}
+            placeholder="请输入"
+          />
+        )}
+      </FormItem>
+    </Modal>
+  );
+});
+
 @connect(({ dictionary, inventory, product, loading }) => ({
   inventory,
   product,
   operationTypeArray: dictionary.operationTypeArray,
+  inventoryInfoBatchSnArray: inventory.inventoryInfoBatchSnArray,
   loading: loading.models.rule,
 }))
 @Form.create()
 export default class TableList extends PureComponent {
   state = {
     expandForm: false,
+    modalVisible: false,
     selectedRows: [],
     formValues: {},
   };
@@ -197,6 +312,36 @@ export default class TableList extends PureComponent {
     });
   };
 
+  handleModalVisible = flag => {
+    this.setState({
+      modalVisible: !!flag,
+    });
+  }
+
+  handleonSearchBatchSn = (params) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'inventory/queryInventoryInfoBatchSn',
+      payload: params,
+    });
+  }
+
+  handleAdd = fields => {
+    const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'rule/add',
+    //   payload: {
+    //     description: fields.desc,
+    //   },
+    // });
+
+    message.success('添加成功');
+    this.setState({
+      modalVisible: false,
+    });
+  };
+
   renderSimpleForm() {
     const { form, operationTypeArray } = this.props;
     const { getFieldDecorator } = form;
@@ -297,9 +442,11 @@ export default class TableList extends PureComponent {
   render() {
     const {
       inventory: { operationData },
+      inventoryInfoBatchSnArray,
+      operationTypeArray,
       loading,
     } = this.props;
-    const { selectedRows } = this.state;
+    const { selectedRows, modalVisible } = this.state;
 
     console.log("manage render props", this.props);
     const columns = [
@@ -367,22 +514,21 @@ export default class TableList extends PureComponent {
       </Menu>
     );
 
+    const parentMethods = {
+      handleAdd: this.handleAdd,
+      handleModalVisible: this.handleModalVisible,
+      handleonSearchBatchSn: this.handleonSearchBatchSn,
+      inventoryInfoBatchSnArray,
+      operationTypeArray,
+    };
+
     return (
       <PageHeaderLayout title="入库&出库">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => {
-                  const { dispatch } = this.props;
-                  dispatch(
-                    routerRedux.push({ pathname: '/product/add' })
-                  );
-                }}
-              >
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
               {selectedRows.length > 0 && (
@@ -407,6 +553,7 @@ export default class TableList extends PureComponent {
             />
           </div>
         </Card>
+        <CreateForm {...parentMethods} modalVisible={modalVisible} />
       </PageHeaderLayout>
     );
   }

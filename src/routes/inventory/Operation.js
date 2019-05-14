@@ -131,8 +131,8 @@ const CreateForm = Form.create()(props => {
             )}
           >
             {inventoryInfoArrayModal.map((inventoryInfo) => {
-              if (inventoryInfo.BatchSn) {
-                return <Option key={inventoryInfo.BatchSn}>{inventoryInfo.BatchSn}</Option>
+              if (inventoryInfo.batchSn) {
+                return <Option key={inventoryInfo.batchSn}>{inventoryInfo.batchSn}</Option>
               }
 
             })}
@@ -140,7 +140,7 @@ const CreateForm = Form.create()(props => {
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="操作类型">
-        {form.getFieldDecorator('desc', {
+        {form.getFieldDecorator('operationType', {
           rules: [{ required: true, message: '请输入操作类型' }],
         })(
           <Select
@@ -163,7 +163,7 @@ const CreateForm = Form.create()(props => {
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="关联ID">
-        {form.getFieldDecorator('iddd')(
+        {form.getFieldDecorator('correlationOperationId')(
           <Input
             style={{ width: '100%' }}
             placeholder="请输入"
@@ -358,8 +358,6 @@ export default class TableList extends PureComponent {
   handleonSearchBatchSn = (params) => {
     const { dispatch } = this.props;
 
-    console.log("=-=-=-=-=-=-=", params);
-
     dispatch({
       type: 'inventory/queryinventoryInfoArrayModal',
       payload: params,
@@ -367,13 +365,13 @@ export default class TableList extends PureComponent {
   }
 
   handleAdd = fields => {
+    console.log("handleAdd",fields);
+
     const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'rule/add',
-    //   payload: {
-    //     description: fields.desc,
-    //   },
-    // });
+    dispatch({
+      type: 'inventory/newInventoryOperation',
+      payload: fields,
+    });
 
     message.success('添加成功');
     this.setState({

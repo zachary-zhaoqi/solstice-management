@@ -2,7 +2,7 @@ import { message } from 'antd';
 import {
   saveProduct, removeProduct, queryProduct,
   queryInventoryInfo, newInventoryInfo,
-  queryInventoryOperation,
+  queryInventoryOperation,newInventoryOperation,
 } from '../services/api';
 
 export default {
@@ -22,6 +22,11 @@ export default {
   },
 
   effects: {
+    *newInventoryOperation({ payload }, { call, put }) {
+      console.log(payload);
+      const response = yield call(newInventoryOperation, payload);
+    },
+
     *saveProduct({ payload }, { call, put }) {
       console.log("model product savProduct payload", payload);
       const response = yield call(saveProduct, payload);
@@ -55,10 +60,7 @@ export default {
       }
     },
     *newInventoryInfo({ payload }, { call, put }) {
-      console.log("1236", payload);
-
       const response = yield call(newInventoryInfo, payload);
-      console.log("123456789", response);
     },
 
 

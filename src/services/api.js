@@ -132,6 +132,13 @@ export async function newInventoryInfo(params){
   });
 }
 
+export async function newInventoryOperation(params){
+  return request(`inventory/inventoryOperation`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
 //shippingAddress
 export async function queryShippingAddress(params) {
   return request(`/shippingaddress/shippingAddress?${stringify(params)}`)

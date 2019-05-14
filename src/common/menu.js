@@ -35,6 +35,18 @@ const menuData = [
       },
     ],
   },
+  {
+    name: '订单管理',
+    icon: 'table',
+    path: 'order',
+    children: [
+      {
+        name: '新建订单',
+        path: 'add',
+        authority: 'admin',
+      },
+    ],
+  },
   /*   {
       name: 'dashboard',
       icon: 'dashboard',

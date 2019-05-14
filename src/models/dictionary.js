@@ -9,6 +9,7 @@ export default {
     productStatusArray:[],
     specificationArray:[],
     operationTypeArray:[],
+    payMethodArray:[],
   },
 
   effects: {

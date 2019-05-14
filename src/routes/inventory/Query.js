@@ -291,13 +291,11 @@ export default class TableList extends PureComponent {
     const columns = [
       {
         title: '库存批次号',
-        fixed: 'left',
         dataIndex: 'batchSn',
       },
       {
         title: '产品名称',
         dataIndex: 'name',
-        fixed: 'left',
         key: 'name',
       },
       {
@@ -347,7 +345,6 @@ export default class TableList extends PureComponent {
               selectedRows={selectedRows}
               loading={loading}
               data={infoData}
-              scroll={{ x: 3000, y: 300 }}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

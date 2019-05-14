@@ -1,5 +1,9 @@
 import { message } from 'antd';
-import {saveProduct, removeProduct,queryInventoryInfo,queryInventoryOperation} from '../services/api';
+import {
+  saveProduct, removeProduct, queryProduct,
+  queryInventoryInfo, newInventoryInfo,
+  queryInventoryOperation,
+} from '../services/api';
 
 export default {
   namespace: 'inventory',
@@ -14,7 +18,7 @@ export default {
       list: [],
       pagination: {},
     },
-    inventoryInfoBatchSnArray:[],
+    inventoryInfoArrayModal: [],
   },
 
   effects: {
@@ -28,6 +32,35 @@ export default {
         message.error(response.message);
       }
     },
+
+    *queryinventoryInfoArrayModal({ payload }, { call, put }) {
+      console.log("|||||||||||=-=-=-=-=-=-=", payload);
+
+      const response = yield call(queryProduct, payload);
+      const response1 = yield call(queryInventoryInfo, { productId: response.data[0].id });
+
+      console.log("queryinventoryInfoArrayModal", response, response1);
+
+
+      if (response1.data.length > 0) {
+        yield put({
+          type: 'savaInventoryInfoArrayModal',
+          payload: response1.data || [],
+        });
+      } else {
+        yield put({
+          type: 'savaInventoryInfoArrayModal',
+          payload: response.data || [],
+        });
+      }
+    },
+    *newInventoryInfo({ payload }, { call, put }) {
+      console.log("1236", payload);
+
+      const response = yield call(newInventoryInfo, payload);
+      console.log("123456789", response);
+    },
+
 
     *queryInventoryInfo({ payload }, { call, put }) {
       const response = yield call(queryInventoryInfo, payload);
@@ -49,15 +82,6 @@ export default {
       yield put({
         type: 'savaInventoryOperation',
         payload: response.data || [],
-      });
-    },
-
-    *queryInventoryInfoBatchSn({payload},{call,put}){
-      const response = yield call(queryInventoryInfo, payload);
-      const InventoryInfoBatchSnArray=response.data.map(a=>a.BatchSn);
-      yield put({
-        type: 'savaInventoryInfoBatchSnArray',
-        payload:  InventoryInfoBatchSnArray|| [],
       });
     },
   },
@@ -83,10 +107,11 @@ export default {
         operationData: nowdata,
       }
     },
-    savaInventoryInfoBatchSnArray(state, { payload }) {
+    savaInventoryInfoArrayModal(state, { payload }) {
+      console.log("savaInventoryInfoArrayModal", payload)
       return {
         ...state,
-        inventoryInfoBatchSnArray: payload,
+        inventoryInfoArrayModal: payload,
       }
     },
   },

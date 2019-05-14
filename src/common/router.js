@@ -89,11 +89,15 @@ export const getRouterData = app => {
         import('../routes/product/AddForm')),
     },
     '/inventory/query': {
-      component: dynamicWrapper(app, ['dictionary','inventory'], () => import('../routes/inventory/Query')),
+      component: dynamicWrapper(app, ['dictionary', 'inventory', 'product'], () => import('../routes/inventory/Query')),
     },
     '/inventory/operation': {
-      component: dynamicWrapper(app, ['dictionary'], () =>
+      component: dynamicWrapper(app, ['dictionary', 'inventory', 'product'], () =>
         import('../routes/inventory/Operation')),
+    },
+    '/order/add': {
+      component: dynamicWrapper(app, ['dictionary'], () =>
+        import('../routes/order/AddOrder')),
     },
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),

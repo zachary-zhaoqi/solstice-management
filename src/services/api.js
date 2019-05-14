@@ -124,3 +124,15 @@ export async function queryInventoryInfo(params) {
 export async function queryInventoryOperation(params) {
   return request(`/inventory/inventoryOperation?${stringify(params)}`)
 }
+
+export async function newInventoryInfo(params){
+  return request(`inventory/inventoryInfo`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+//shippingAddress
+export async function queryShippingAddress(params) {
+  return request(`/shippingaddress/shippingAddress?${stringify(params)}`)
+}

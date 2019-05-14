@@ -37,7 +37,16 @@ const getValue = obj =>
 
 
 const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, handleonSearchBatchSn, inventoryInfoBatchSnArray, operationTypeArray } = props;
+  const { 
+    modalVisible, 
+    form, 
+    handleAdd, 
+    handleModalVisible, 
+    handleonSearchBatchSn, 
+    inventoryInfoArrayModal, 
+    operationTypeArray,
+    onNewInventory,
+   } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -50,6 +59,20 @@ const CreateForm = Form.create()(props => {
     handleonSearchBatchSn({
       'name': value,
     })
+  }
+
+  const onNEWinventory = () => {
+    onNewInventory({
+      "productId":inventoryInfoArrayModal[0].productId||inventoryInfoArrayModal[0].id,
+    })
+  }
+
+  const ChooseProductTooltip = () => {
+    if (inventoryInfoArrayModal.length > 0) {
+      return <Badge status='success' text={`已查询商品${inventoryInfoArrayModal[0].productName || inventoryInfoArrayModal[0].name}相关库存`} />
+    } else {
+      return <Badge status='error' text='请通过上方搜索框选择商品' />
+    }
   }
 
   return (
@@ -78,8 +101,10 @@ const CreateForm = Form.create()(props => {
             />
           </Input.Group>
         </Tooltip>
+        <br />
+        <ChooseProductTooltip />
       </Card>
-      <br />
+
       <br />
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="库存批次号">
         {form.getFieldDecorator('batchSn', {
@@ -93,9 +118,7 @@ const CreateForm = Form.create()(props => {
                 <Divider style={{ margin: '4px 0' }} />
                 <Popconfirm
                   title="你确定要新建库存批次吗?"
-                  onConfirm={() => {
-                    console.log("sadkfljhsdalkfjh;hf;")
-                  }}
+                  onConfirm={onNEWinventory}
                   okText="确认"
                   cancelText="取消"
                 >
@@ -104,11 +127,15 @@ const CreateForm = Form.create()(props => {
                     新建一个库存批次
                   </div>
                 </Popconfirm>
-
               </div>
             )}
           >
-            {inventoryInfoBatchSnArray.map(BatchSn => <Option key={BatchSn}>{BatchSn}</Option>)}
+            {inventoryInfoArrayModal.map((inventoryInfo) => {
+              if (inventoryInfo.BatchSn) {
+                return <Option key={inventoryInfo.BatchSn}>{inventoryInfo.BatchSn}</Option>
+              }
+
+            })}
           </Select>,
         )}
       </FormItem>
@@ -125,7 +152,7 @@ const CreateForm = Form.create()(props => {
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="操作数量">
-        {form.getFieldDecorator('desc', {
+        {form.getFieldDecorator('number', {
           rules: [{ required: true, message: '请输入操作数量' }],
         })(
           <InputNumber
@@ -136,7 +163,7 @@ const CreateForm = Form.create()(props => {
         )}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="关联ID">
-        {form.getFieldDecorator('desc')(
+        {form.getFieldDecorator('iddd')(
           <Input
             style={{ width: '100%' }}
             placeholder="请输入"
@@ -151,7 +178,7 @@ const CreateForm = Form.create()(props => {
   inventory,
   product,
   operationTypeArray: dictionary.operationTypeArray,
-  inventoryInfoBatchSnArray: inventory.inventoryInfoBatchSnArray,
+  inventoryInfoArrayModal: inventory.inventoryInfoArrayModal,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -179,6 +206,16 @@ export default class TableList extends PureComponent {
     //   type: 'inventory/queryInventoryOperation',
     //   payload: {},
     // });
+  }
+
+  onNewInventory=(params)=>{
+    console.log("laskfjd;sdlfj",params);
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'inventory/newInventoryInfo',
+      payload:params,
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -321,8 +358,10 @@ export default class TableList extends PureComponent {
   handleonSearchBatchSn = (params) => {
     const { dispatch } = this.props;
 
+    console.log("=-=-=-=-=-=-=", params);
+
     dispatch({
-      type: 'inventory/queryInventoryInfoBatchSn',
+      type: 'inventory/queryinventoryInfoArrayModal',
       payload: params,
     });
   }
@@ -355,7 +394,7 @@ export default class TableList extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="操作类型">
-              {getFieldDecorator('categorySn')(
+              {getFieldDecorator('operationType')(
                 <Select placeholder="请选择">
                   {operationTypeArray.map(operationType => <Option key={operationType.value}>{operationType.labelZhCn}</Option>)}
                 </Select>
@@ -442,7 +481,7 @@ export default class TableList extends PureComponent {
   render() {
     const {
       inventory: { operationData },
-      inventoryInfoBatchSnArray,
+      inventoryInfoArrayModal,
       operationTypeArray,
       loading,
     } = this.props;
@@ -518,7 +557,8 @@ export default class TableList extends PureComponent {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
       handleonSearchBatchSn: this.handleonSearchBatchSn,
-      inventoryInfoBatchSnArray,
+      onNewInventory:this.onNewInventory,
+      inventoryInfoArrayModal,
       operationTypeArray,
     };
 

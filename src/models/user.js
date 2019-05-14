@@ -1,9 +1,10 @@
-import { query as queryUsers, queryCurrent } from '../services/user';
+import { query as queryUsers, queryCurrent, queryUserInfo } from '../services/user';
 
 export default {
   namespace: 'user',
 
   state: {
+    userArray: [],
     list: [],
     currentUser: {},
   },
@@ -24,6 +25,14 @@ export default {
         payload: response,
       });
     },
+
+    *queryUserArray({ payload }, { call, put }) {
+      const response = yield call(queryUserInfo, payload);
+      yield put({
+        type: 'saveUserArray',
+        payload: response.data,
+      });
+    },
   },
 
   reducers: {
@@ -35,8 +44,8 @@ export default {
     },
     saveCurrentUser(state, action) {
       // console.log('user model - reducers -saveCurrentUser', action)
-      const currentUser={
-        name:action.payload.data.userName || {},
+      const currentUser = {
+        name: action.payload.data.userName || {},
         ...action.payload.data,
       }
 
@@ -52,6 +61,12 @@ export default {
           ...state.currentUser,
           notifyCount: action.payload,
         },
+      };
+    },
+    saveUserArray(state, {payload}){
+      return {
+        ...state,
+        userArray: payload,
       };
     },
   },

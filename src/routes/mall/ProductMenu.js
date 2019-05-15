@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Row, Col, Form, Card, Select, List } from 'antd';
+import { Row, Col, Form, Card, Select, List, Divider } from 'antd';
 
 import TagSelect from 'components/TagSelect';
 import AvatarList from 'components/AvatarList';
@@ -15,19 +15,27 @@ const FormItem = Form.Item;
 
 /* eslint react/no-array-index-key: 0 */
 @Form.create()
-@connect(({ list, loading }) => ({
-  list,
+@connect(({ product, dictionary, loading }) => ({
+  product,
+  categoryArray: dictionary.categoryArray,
   loading: loading.models.list,
 }))
 export default class CoverCardList extends PureComponent {
+
+  componentWillMount(){
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'dictionary/getDataDictionary',
+      payload: { key: 'category' },
+    });
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'list/fetch',
-    //   payload: {
-    //     count: 8,
-    //   },
-    // });
+    dispatch({
+      type: 'product/queryProduct',
+      payload: {},
+    });
   }
 
   handleFormSubmit = () => {
@@ -37,12 +45,12 @@ export default class CoverCardList extends PureComponent {
       form.validateFields(err => {
         if (!err) {
           // eslint-disable-next-line
-          dispatch({
-            type: 'list/fetch',
-            payload: {
-              count: 8,
-            },
-          });
+          // dispatch({
+          //   type: 'list/fetch',
+          //   payload: {
+          //     count: 8,
+          //   },
+          // });
         }
       });
     }, 0);
@@ -50,33 +58,36 @@ export default class CoverCardList extends PureComponent {
 
   render() {
     const {
-      list: { list = [] },
+      product: { data },
+      categoryArray,
       loading,
       form,
     } = this.props;
     const { getFieldDecorator } = form;
-
-    const cardList = list ? (
+    console.log(this.props);
+    const cardList = data.list ? (
       <List
         rowKey="id"
         loading={loading}
         grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
-        dataSource={list}
+        dataSource={data.list}
         renderItem={item => (
           <List.Item>
             <Card
               className={styles.card}
               hoverable
-              cover={<img alt={item.title} src={item.cover} height={154} />}
+              cover={<img alt={item.name} src={item.picture} height={154} />}
             >
               <Card.Meta
-                title={<a href="#">{item.title}</a>}
-                description={<Ellipsis lines={2}>{item.subDescription}</Ellipsis>}
+                title={<a href="#">{item.name}</a>}
+                description={<Ellipsis lines={2}>{item.describe}</Ellipsis>}
               />
               <div className={styles.cardItemContent}>
-                <span>{moment(item.updatedAt).fromNow()}</span>
+                <span>{item.categoryName}</span>
+                <Divider type="vertical" />
+                <span>{item.brandName}</span>
                 <div className={styles.avatarList}>
-                  <AvatarList size="mini">
+                  {/* <AvatarList size="mini">
                     {item.members.map((member, i) => (
                       <AvatarList.Item
                         key={`${item.id}-avatar-${i}`}
@@ -84,7 +95,7 @@ export default class CoverCardList extends PureComponent {
                         tips={member.name}
                       />
                     ))}
-                  </AvatarList>
+                  </AvatarList> */}
                 </div>
               </div>
             </Card>
@@ -106,20 +117,9 @@ export default class CoverCardList extends PureComponent {
           <Form layout="inline">
             <StandardFormRow title="所属类目" block style={{ paddingBottom: 11 }}>
               <FormItem>
-                {getFieldDecorator('category')(
+                {getFieldDecorator('categorySn')(
                   <TagSelect onChange={this.handleFormSubmit} expandable>
-                    <TagSelect.Option value="cat1">类目一</TagSelect.Option>
-                    <TagSelect.Option value="cat2">类目二</TagSelect.Option>
-                    <TagSelect.Option value="cat3">类目三</TagSelect.Option>
-                    <TagSelect.Option value="cat4">类目四</TagSelect.Option>
-                    <TagSelect.Option value="cat5">类目五</TagSelect.Option>
-                    <TagSelect.Option value="cat6">类目六</TagSelect.Option>
-                    <TagSelect.Option value="cat7">类目七</TagSelect.Option>
-                    <TagSelect.Option value="cat8">类目八</TagSelect.Option>
-                    <TagSelect.Option value="cat9">类目九</TagSelect.Option>
-                    <TagSelect.Option value="cat10">类目十</TagSelect.Option>
-                    <TagSelect.Option value="cat11">类目十一</TagSelect.Option>
-                    <TagSelect.Option value="cat12">类目十二</TagSelect.Option>
+                    {categoryArray.map(item=><TagSelect.Option value={item.id}>{item.labelZhCn}</TagSelect.Option>)}
                   </TagSelect>
                 )}
               </FormItem>

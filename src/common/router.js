@@ -99,6 +99,10 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['dictionary'], () =>
         import('../routes/order/AddOrder')),
     },
+    '/menu/productMenu': {
+      component: dynamicWrapper(app, ['dictionary', 'product'], () =>
+        import('../routes/mall/ProductMenu')),
+    },
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
     },

@@ -13,6 +13,7 @@ import {
   Button,
   message,
   DatePicker,
+  Divider,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import StandardTable from 'components/StandardTable';
@@ -73,11 +74,10 @@ export default class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
 
-    // dispatch({
-    //   type: 'inventory/queryInventoryInfo',
-    //   payload: {},
-    // });
-
+    dispatch({
+      type: 'inventory/queryInventoryInfo',
+      payload: {},
+    });
 
   }
 
@@ -159,10 +159,10 @@ export default class TableList extends PureComponent {
 
       console.log('inventory handleSearch values', values);
 
-      dispatch({
-        type: 'product/queryProduct',
-        payload: values,
-      });
+    dispatch({
+      type: 'inventory/queryInventoryInfo',
+      payload: values,
+    });
     });
   };
 
@@ -315,16 +315,36 @@ export default class TableList extends PureComponent {
         dataIndex: 'specification',
       },
       {
-        title: '库存数量',
-        dataIndex: 'number',
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'creatTime',
+        title: '最后修改时间',
+        dataIndex: 'modifyTime',
         sorter: true,
         render(val) {
           return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
         },
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'createTime',
+        sorter: true,
+        render(val) {
+          return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
+        },
+      },
+      {
+        title: '库存数量',
+        dataIndex: 'number',
+        fixed: 'right',
+      },
+      {
+        title: '操作',
+        fixed: 'right',
+        render: () => (
+          <Fragment>
+            <a href="">出库</a>
+            <Divider type="vertical" />
+            <a>入库</a>
+          </Fragment>
+        ),
       },
     ];
 
@@ -334,17 +354,19 @@ export default class TableList extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
+            {/* <div className={styles.tableListOperator}>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button>冻结</Button>
+                  <Button>出库</Button>
+                  <Button>入库</Button>
                 </span>
               )}
-            </div>
+            </div> */}
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
               data={infoData}
+              scroll={{ x: 1500}}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

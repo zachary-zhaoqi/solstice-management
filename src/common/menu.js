@@ -47,6 +47,17 @@ const menuData = [
       },
     ],
   },
+  {
+    name: '购买',
+    icon: 'table',
+    path: 'menu',
+    children: [
+      {
+        name: '全部产品',
+        path: 'productMenu',
+      },
+    ],
+  },
   /*   {
       name: 'dashboard',
       icon: 'dashboard',

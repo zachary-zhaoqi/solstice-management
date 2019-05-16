@@ -145,7 +145,7 @@ export default class BasicLayout extends React.PureComponent {
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = 'Ant Design Pro';
+    let title = '至夏商城';
     let currRouterData = null;
     // match params path
     Object.keys(routerData).forEach(key => {
@@ -154,7 +154,7 @@ export default class BasicLayout extends React.PureComponent {
       }
     });
     if (currRouterData && currRouterData.name) {
-      title = `${currRouterData.name} - Ant Design Pro`;
+      title = `${currRouterData.name} - 至夏商城`;
     }
     return title;
   }
@@ -284,27 +284,27 @@ export default class BasicLayout extends React.PureComponent {
             <GlobalFooter
               links={[
                 {
-                  key: 'Pro 首页',
-                  title: 'Pro 首页',
-                  href: 'http://pro.ant.design',
+                  key: '至夏商城',
+                  title: '至夏商城',
+                  href: 'http://www.zhaoqi.cc',
                   blankTarget: true,
                 },
                 {
                   key: 'github',
                   title: <Icon type="github" />,
-                  href: 'https://github.com/ant-design/ant-design-pro',
+                  href: 'https://github.com/zachary-zhaoqi/solstice-management',
                   blankTarget: true,
                 },
                 {
-                  key: 'Ant Design',
-                  title: 'Ant Design',
-                  href: 'http://ant.design',
+                  key: '赵奇的网站',
+                  title: '赵奇的网站',
+                  href: 'http://www.zhaoqi.cc',
                   blankTarget: true,
                 },
               ]}
               copyright={
                 <Fragment>
-                  Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+                  Copyright <Icon type="copyright" /> 赵奇同学毕业设计作品 
                 </Fragment>
               }
             />

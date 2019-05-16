@@ -12,7 +12,6 @@ import {
   Modal,
   Table,
   Spin,
-  Divider,
 } from 'antd';
 import { connect } from 'dva';
 import FooterToolbar from 'components/FooterToolbar';
@@ -32,8 +31,29 @@ const orderMasterInfo = {
   shippingAddressDesc: '详细收货地址',
 };
 
+const tableData = [
+  {
+    key: '1',
+    workId: '00001',
+    name: 'John Brown',
+    department: 'New York No. 1 Lake Park',
+  },
+  {
+    key: '2',
+    workId: '00002',
+    name: 'Jim Green',
+    department: 'London No. 1 Lake Park',
+  },
+  {
+    key: '3',
+    workId: '00003',
+    name: 'Joe Black',
+    department: 'Sidney No. 1 Lake Park',
+  },
+];
+
 const SearchShippingAddressModel = Form.create()(props => {
-  const { modalVisible, handleSetShippingAddress, handleModalVisible, dataSource, chooseShippingAddressLoading } = props;
+  const { modalVisible, handleSetShippingAddress, handleModalVisible, dataSource,chooseShippingAddressLoading } = props;
 
   const columns = [
     {
@@ -77,11 +97,9 @@ const SearchShippingAddressModel = Form.create()(props => {
   )
 });
 
-@connect(({ user, product, order, dictionary, global, loading }) => ({
+@connect(({ user, dictionary, global, loading }) => ({
   user,
   dictionary,
-  product,
-  order,
   collapsed: global.collapsed,
   submitting: loading.effects['form/submitAdvancedForm'],
 }))
@@ -89,27 +107,15 @@ const SearchShippingAddressModel = Form.create()(props => {
 export default class AdvancedForm extends PureComponent {
   state = {
     SearchShippingAddressModelVisible: false,
-    shippingAddress: undefined,
+    shippingAddress:undefined,
     shippingAddressArray: [],
-    chooseShippingAddressLoading: true,
+    chooseShippingAddressLoading:true,
   };
 
-  componentWillMount() {
-    const { dispatch, location } = this.props;
+  componentWillMount(){
+    const {location}=this.props;
 
-    if (location.params !== undefined) {
-      dispatch({
-        type: 'order/initOrderDetailList',
-        payload: { id: location.params },
-      });
-    }
-
-    dispatch({
-      type: 'dictionary/getDataDictionary',
-      payload: { key: 'payMethod' },
-    });
-
-    console.log("location.params", location.params);
+    console.log("location.params",location.params);
   }
 
   componentDidMount() {
@@ -124,19 +130,19 @@ export default class AdvancedForm extends PureComponent {
   handleSetShippingAddress = (selectedRowKeys, selectedRows) => {
     // const{form}=this.props;
     this.setState({
-      shippingAddress: selectedRows[0],
+      shippingAddress:selectedRows[0],
       SearchShippingAddressModelVisible: false,
-      chooseShippingAddressLoading: true,
+      chooseShippingAddressLoading:true,
     });
     // form.setFieldsValue('shippingAddressName',selectedRows[0].consifnee)
     // form.setFieldsValue('shippingAddressTel',selectedRows[0].tel)
     // form.setFieldsValue('shippingAddressDesc',`${selectedRows[0].province}${selectedRows[0].city}${selectedRows[0].district}${selectedRows[0].address}`)
-
+   
   }
 
   handleModalVisible = flag => {
     this.setState({
-      chooseShippingAddressLoading: true,
+      chooseShippingAddressLoading:true,
       SearchShippingAddressModelVisible: !!flag,
     });
   }
@@ -144,41 +150,23 @@ export default class AdvancedForm extends PureComponent {
   handleQueryShippinAddress = (value) => {
     queryShippingAddress({ 'id': value }).then((res) => {
       this.setState({
-        shippingAddressArray: res.data,
+        shippingAddressArray:res.data,
         SearchShippingAddressModelVisible: true,
-        chooseShippingAddressLoading: false,
+        chooseShippingAddressLoading:false,
       });
     })
     this.handleModalVisible(true);
   }
 
-  handleOrderDetailChange=(e)=>{
-    const { dispatch } = this.props;
-    const newOrder={
-      orderDetailList:e,
-      orderMoney:0,
-    }
-
-    e.map(item=>{
-      newOrder.orderMoney+=((item.orderProductNumber||1)*item.orderProductPrice)
-    });
-
-    dispatch({
-      type: 'order/updateNewOrder',
-      payload: newOrder,
-    });
-  }
-
   render() {
     const {
       form,
-      order: { newOrder },
+      dispatch,
       submitting,
       user: { userArray },
       dictionary: {
         payMethodArray,
       },
-      dispatch,
     } = this.props;
 
     const {
@@ -188,27 +176,16 @@ export default class AdvancedForm extends PureComponent {
       chooseShippingAddressLoading,
     } = this.state;
 
+    console.log("=========-------------", this.props);
+
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
-
-    console.log("render this.props",this.props);
-
     const validate = () => {
       validateFieldsAndScroll((error, values) => {
         if (!error) {
-          console.log("values",{
-            ...newOrder,
-            shippingAddressId:values.shippingAddressId,
-            payMethod:values.payMethod,
-            userId:values.userId,
-          });
+          // submit the values
           dispatch({
-            type:'order/createOrder',
-            payload:{
-              ...newOrder,
-              shippingAddressId:values.shippingAddressId,
-              payMethod:values.payMethod,
-              userId:values.userId,
-            },
+            type: 'form/submitAdvancedForm',
+            payload: values,
           });
         }
       });
@@ -296,8 +273,8 @@ export default class AdvancedForm extends PureComponent {
               </Col>
               <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
                 <Form.Item label={orderMasterInfo.shippingAddress}>
-                  {getFieldDecorator('shippingAddressId', {
-                    initialValue: shippingAddress ? shippingAddress.id : '',
+                  {getFieldDecorator('shippingAddressID', {
+                    initialValue:shippingAddress?shippingAddress.id:'',
                     rules: [{ required: true, message: '请选择收货地址' }],
                   })(
                     <Input.Search
@@ -312,18 +289,18 @@ export default class AdvancedForm extends PureComponent {
               <Col lg={6} md={12} sm={24}>
                 <Form.Item label={orderMasterInfo.shippingAddressName}>
                   {getFieldDecorator('shippingAddressName', {
-                    initialValue: shippingAddress ? shippingAddress.consignee : '',
+                    initialValue:shippingAddress?shippingAddress.consignee:'',
                     rules: [{ required: true, message: '请选择收货地址' }],
                   })
-                    (
-                      <Input placeholder="选择收货地址后自动填写" readOnly />
-                    )}
+                  (
+                    <Input placeholder="选择收货地址后自动填写" readOnly />
+                  )}
                 </Form.Item>
               </Col>
               <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
                 <Form.Item label={orderMasterInfo.shippingAddressTel}>
                   {getFieldDecorator('shippingAddressTel', {
-                    initialValue: shippingAddress ? shippingAddress.tel : '',
+                    initialValue:shippingAddress?shippingAddress.tel:'',
                     rules: [{ required: true, message: '请选择收货地址' }],
                   })(
                     <Input placeholder="选择收货地址后自动填写" readOnly />
@@ -333,7 +310,7 @@ export default class AdvancedForm extends PureComponent {
               <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
                 <Form.Item label={orderMasterInfo.shippingAddressDesc}>
                   {getFieldDecorator('shippingAddressDesc', {
-                    initialValue: shippingAddress ? `${shippingAddress.province}${shippingAddress.city}${shippingAddress.district}${shippingAddress.address}` : '',
+                    initialValue:shippingAddress?`${shippingAddress.province}${shippingAddress.city}${shippingAddress.district}${shippingAddress.address}`:'',
                     rules: [{ required: true, message: '请选择收货地址' }],
                   })(
                     <Input placeholder="选择收货地址后自动填写" readOnly />
@@ -345,14 +322,10 @@ export default class AdvancedForm extends PureComponent {
         </Card>
         <Card title="订单商品" bordered={false}>
           {getFieldDecorator('members', {
-            initialValue: newOrder.orderDetailList,
-          })(<TableForm onChange={(e)=>{this.handleOrderDetailChange(e)}} />)}
+            initialValue: tableData,
+          })(<TableForm />)}
         </Card>
         <FooterToolbar>
-          <span>订单总价：</span>
-          <Icon type="money-collect" theme="twoTone" twoToneColor="#e06c75" />
-          <span>{newOrder.orderMoney||''}</span>
-          <Divider type="vertical" />
           {getErrorInfo()}
           <Button type="primary" onClick={validate} loading={submitting}>
             提交

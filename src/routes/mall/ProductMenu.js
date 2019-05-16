@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Row, Col, Form, Card, Select, List, Divider } from 'antd';
+import { Row, Col, Form, Card, Select, List, Divider, Button, Slider } from 'antd';
 
 import TagSelect from 'components/TagSelect';
 import AvatarList from 'components/AvatarList';
 import Ellipsis from 'components/Ellipsis';
 import StandardFormRow from 'components/StandardFormRow';
-
+import { routerRedux } from 'dva/router';
 import styles from './Projects.less';
 
 const { Option } = Select;
@@ -22,7 +22,7 @@ const FormItem = Form.Item;
 }))
 export default class CoverCardList extends PureComponent {
 
-  componentWillMount(){
+  componentWillMount() {
     const { dispatch } = this.props;
     dispatch({
       type: 'dictionary/getDataDictionary',
@@ -56,6 +56,14 @@ export default class CoverCardList extends PureComponent {
     }, 0);
   };
 
+  newOrder = (id) => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push({
+      pathname: '/order/add',
+      params: id,
+    }));
+  };
+
   render() {
     const {
       product: { data },
@@ -64,7 +72,10 @@ export default class CoverCardList extends PureComponent {
       form,
     } = this.props;
     const { getFieldDecorator } = form;
+
     console.log(this.props);
+
+
     const cardList = data.list ? (
       <List
         rowKey="id"
@@ -79,9 +90,10 @@ export default class CoverCardList extends PureComponent {
               cover={<img alt={item.name} src={item.picture} height={154} />}
             >
               <Card.Meta
-                title={<a href="#">{item.name}</a>}
+                title={<a>{item.name}</a>}
                 description={<Ellipsis lines={2}>{item.describe}</Ellipsis>}
               />
+              <Button onClick={() => this.newOrder(item.id)}>购买</Button>
               <div className={styles.cardItemContent}>
                 <span>{item.categoryName}</span>
                 <Divider type="vertical" />
@@ -111,6 +123,8 @@ export default class CoverCardList extends PureComponent {
       },
     };
 
+
+
     return (
       <div className={styles.coverCardList}>
         <Card bordered={false}>
@@ -119,7 +133,7 @@ export default class CoverCardList extends PureComponent {
               <FormItem>
                 {getFieldDecorator('categorySn')(
                   <TagSelect onChange={this.handleFormSubmit} expandable>
-                    {categoryArray.map(item=><TagSelect.Option value={item.id}>{item.labelZhCn}</TagSelect.Option>)}
+                    {categoryArray.map(item => <TagSelect.Option value={item.id}>{item.labelZhCn}</TagSelect.Option>)}
                   </TagSelect>
                 )}
               </FormItem>
@@ -127,7 +141,7 @@ export default class CoverCardList extends PureComponent {
             <StandardFormRow title="其它选项" grid last>
               <Row gutter={16}>
                 <Col lg={8} md={10} sm={10} xs={24}>
-                  <FormItem {...formItemLayout} label="作者">
+                  <FormItem {...formItemLayout} label="品牌">
                     {getFieldDecorator('author', {})(
                       <Select
                         onChange={this.handleFormSubmit}
@@ -140,16 +154,14 @@ export default class CoverCardList extends PureComponent {
                   </FormItem>
                 </Col>
                 <Col lg={8} md={10} sm={10} xs={24}>
-                  <FormItem {...formItemLayout} label="好评度">
+                  <FormItem {...formItemLayout} label="售价">
                     {getFieldDecorator('rate', {})(
-                      <Select
-                        onChange={this.handleFormSubmit}
-                        placeholder="不限"
-                        style={{ maxWidth: 200, width: '100%' }}
-                      >
-                        <Option value="good">优秀</Option>
-                        <Option value="normal">普通</Option>
-                      </Select>
+                      <Slider
+                        range
+                        step={0.1}
+                        max={10000}
+                        defaultValue={[20, 50]}
+                      />
                     )}
                   </FormItem>
                 </Col>

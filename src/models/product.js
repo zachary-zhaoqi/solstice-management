@@ -32,16 +32,18 @@ export default {
       });
     },
 
-    *removeProduct({ payload,callback }, { call, put }) {
+    *removeProduct({ payload, callback }, { call, put }) {
       const response = yield call(removeProduct, payload);
       if (callback && typeof callback === 'function') {
         callback(response);
-    }
+      }
     },
   },
 
   reducers: {
     savaProductList(state, { payload }) {
+
+      console.log("savaProductList", payload);
 
       const nowdata = {
         list: payload,

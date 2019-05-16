@@ -125,21 +125,33 @@ export async function queryInventoryOperation(params) {
   return request(`/inventory/inventoryOperation?${stringify(params)}`)
 }
 
-export async function newInventoryInfo(params){
+export async function newInventoryInfo(params) {
   return request(`inventory/inventoryInfo`, {
     method: 'POST',
     body: params,
   });
 }
 
-export async function newInventoryOperation(params){
+export async function newInventoryOperation(params) {
   return request(`inventory/inventoryOperation`, {
     method: 'POST',
     body: params,
   });
 }
 
-//shippingAddress
+// shippingAddress
 export async function queryShippingAddress(params) {
   return request(`/shippingaddress/shippingAddress?${stringify(params)}`)
+}
+
+
+export async function createOrder(params) {
+  return request(`/order/orderMaster`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function queryOrder(params){
+  return request(`/order/orderMaster?${stringify(params)}`)
 }

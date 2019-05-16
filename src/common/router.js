@@ -95,8 +95,12 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['dictionary', 'inventory', 'product'], () =>
         import('../routes/inventory/Operation')),
     },
+    '/order/manage': {
+      component: dynamicWrapper(app, ['dictionary', 'product','order'], () =>
+        import('../routes/order/Manage')),
+    },
     '/order/add': {
-      component: dynamicWrapper(app, ['dictionary'], () =>
+      component: dynamicWrapper(app, ['dictionary', 'product','order'], () =>
         import('../routes/order/AddOrder')),
     },
     '/menu/productMenu': {

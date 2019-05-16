@@ -70,10 +70,11 @@ export default class AdvancedForm extends PureComponent {
       validateFieldsAndScroll((error, values) => {
         if (!error) {
           // submit the values
-          dispatch({
-            type: 'form/submitAdvancedForm',
-            payload: values,
-          });
+          console.log("values",values);
+          // dispatch({
+          //   type: 'form/submitAdvancedForm',
+          //   payload: values,
+          // });
         }
       });
     };

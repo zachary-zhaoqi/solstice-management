@@ -37,16 +37,16 @@ const getValue = obj =>
 
 
 const CreateForm = Form.create()(props => {
-  const { 
-    modalVisible, 
-    form, 
-    handleAdd, 
-    handleModalVisible, 
-    handleonSearchBatchSn, 
-    inventoryInfoArrayModal, 
+  const {
+    modalVisible,
+    form,
+    handleAdd,
+    handleModalVisible,
+    handleonSearchBatchSn,
+    inventoryInfoArrayModal,
     operationTypeArray,
     onNewInventory,
-   } = props;
+  } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -63,7 +63,7 @@ const CreateForm = Form.create()(props => {
 
   const onNEWinventory = () => {
     onNewInventory({
-      "productId":inventoryInfoArrayModal[0].productId||inventoryInfoArrayModal[0].id,
+      "productId": inventoryInfoArrayModal[0].productId || inventoryInfoArrayModal[0].id,
     })
   }
 
@@ -202,19 +202,19 @@ export default class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
 
-    // dispatch({
-    //   type: 'inventory/queryInventoryOperation',
-    //   payload: {},
-    // });
+    dispatch({
+      type: 'inventory/queryInventoryOperation',
+      payload: {},
+    });
   }
 
-  onNewInventory=(params)=>{
-    console.log("laskfjd;sdlfj",params);
+  onNewInventory = (params) => {
+    console.log("laskfjd;sdlfj", params);
     const { dispatch } = this.props;
 
     dispatch({
       type: 'inventory/newInventoryInfo',
-      payload:params,
+      payload: params,
     });
   }
 
@@ -342,10 +342,12 @@ export default class TableList extends PureComponent {
         formValues: values,
       });
 
+
       dispatch({
-        type: 'product/queryProduct',
+        type: 'inventory/queryInventoryOperation',
         payload: values,
       });
+
     });
   };
 
@@ -365,7 +367,7 @@ export default class TableList extends PureComponent {
   }
 
   handleAdd = fields => {
-    console.log("handleAdd",fields);
+    console.log("handleAdd", fields);
 
     const { dispatch } = this.props;
     dispatch({
@@ -387,7 +389,7 @@ export default class TableList extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="库存批次号">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('batchSn')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -489,14 +491,13 @@ export default class TableList extends PureComponent {
     const columns = [
       {
         title: 'ID',
-        dataIndex: 'inventoryId',
+        dataIndex: 'id',
         fixed: 'left',
         key: 'inventoryId',
       },
       {
         title: '库存批次号',
         dataIndex: 'batchSn',
-        fixed: 'left',
         key: 'batchSn',
       },
       {
@@ -555,7 +556,7 @@ export default class TableList extends PureComponent {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
       handleonSearchBatchSn: this.handleonSearchBatchSn,
-      onNewInventory:this.onNewInventory,
+      onNewInventory: this.onNewInventory,
       inventoryInfoArrayModal,
       operationTypeArray,
     };
@@ -584,7 +585,7 @@ export default class TableList extends PureComponent {
               selectedRows={selectedRows}
               loading={loading}
               data={operationData}
-              scroll={{ x: 1500, y: 300 }}
+              scroll={{ x: 1000 }}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

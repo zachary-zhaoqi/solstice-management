@@ -41,6 +41,11 @@ const menuData = [
     path: 'order',
     children: [
       {
+        name: '订单管理',
+        path: 'manage',
+        authority: 'admin',
+      },
+      {
         name: '新建订单',
         path: 'add',
         authority: 'admin',

@@ -17,6 +17,7 @@ import {
   message,
   Popconfirm,
   Badge,
+  Modal,
   Divider,
 } from 'antd';
 import { routerRedux } from 'dva/router';
@@ -27,17 +28,74 @@ import styles from './Manage.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const getValue = obj =>
+const getValue = obj => {
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
+}
+
+const CreatePayForm = Form.create()(props => {
+  const { form, payModalVisible, handlePayModalOk, handlePayModalCancel, payMethodArray } = props;
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handlePayModalOk(fieldsValue);
+    });
+  };
+  return (
+    <Modal
+      title="Basic Modal"
+      visible={payModalVisible}
+      onOk={okHandle}
+      onCancel={handlePayModalCancel}
+    >
+      <Form.Item label="支付方式">
+        {form.getFieldDecorator('payMethod', {
+          rules: [{ required: true, message: '选择支付方式' }],
+        })(
+          <Select style={{ width: '100%' }} placeholder="请选择">
+            {payMethodArray.map(payMethod => <Option key={payMethod.value}>{payMethod.labelZhCn}</Option>)}
+          </Select>
+        )}
+      </Form.Item>
+    </Modal>
+  );
+});
+
+const CreateShipForm = Form.create()(props => {
+  const { form, shipModalVisible, handleShipModalOk, handleShipModalCancel } = props;
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handleShipModalOk(fieldsValue);
+    });
+  };
+  return (
+    <Modal
+      title="请输入发货信息"
+      visible={shipModalVisible}
+      onOk={okHandle}
+      onCancel={handleShipModalCancel}
+    >
+      <Form.Item label="快递公司名称">
+        {form.getFieldDecorator('shippingCompanyName')(<Input />)}
+      </Form.Item>
+      <Form.Item label="快递单号">
+        {form.getFieldDecorator('shippingSn')(<Input />)}
+      </Form.Item>
+    </Modal>
+  );
+});
 
 @connect(({
-  product, brand,order, dictionary, rule, loading }) => ({
+  product, brand, order, dictionary, rule, loading }) => ({
     rule,
     product,
     order,
     categoryArray: dictionary.categoryArray,
+    payMethodArray: dictionary.payMethodArray,
     productStatusArray: dictionary.productStatusArray,
     brandArray: brand.brandArray,
     loading: loading.models.rule,
@@ -45,6 +103,9 @@ const getValue = obj =>
 @Form.create()
 export default class TableList extends PureComponent {
   state = {
+    payModalVisible: false,
+    shipModalVisible: false,
+    recordOrder: undefined,
     expandForm: false,
     selectedRows: [],
     formValues: {},
@@ -59,12 +120,17 @@ export default class TableList extends PureComponent {
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{ key: 'category', tree: true },
+      payload: { key: 'category', tree: true },
     });
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{key:'productStatus'},
+      payload: { key: 'productStatus' },
+    });
+
+    dispatch({
+      type: 'dictionary/getDataDictionary',
+      payload: { key: 'payMethod' },
     });
   }
 
@@ -72,7 +138,7 @@ export default class TableList extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'order/queryProduct',
+      type: 'order/queryOrder',
       payload: {},
     });
   }
@@ -122,16 +188,90 @@ export default class TableList extends PureComponent {
     });
   };
 
-  handleRemoveClick = (record) => {
+  handlePayModalOk = (values) => {
+    const { recordOrder } = this.state;
     const { dispatch } = this.props;
+
+    recordOrder.payMethod = values.payMethod;
+    recordOrder.payTime = moment().format('YYYY-MM-DDTHH:mm:ss');
+    recordOrder.orderStatus = '待收货';
+    const orderList = [recordOrder];
     dispatch({
-      type: 'product/removeProduct',
-      payload: [record.id],
+      type: 'order/modifyOrderMaster',
+      payload: orderList,
+    });
+    this.handlePayModalCancel();
+  }
+
+  handlePayModalCancel = () => {
+    this.setState({
+      recordOrder: undefined,
+      payModalVisible: false,
     });
   }
 
+  handleShipModalOk = (values) => {
+    const { recordOrder } = this.state;
+    const { dispatch } = this.props;
+
+    recordOrder.shippingCompanyName = values.shippingCompanyName;
+    recordOrder.shippingSn = values.shippingSn;
+    recordOrder.shipmentsTime = moment().format('YYYY-MM-DDTHH:mm:ss');
+
+    recordOrder.orderStatus = '待签收';
+    const orderList = [recordOrder];
+    dispatch({
+      type: 'order/modifyOrderMaster',
+      payload: orderList,
+    });
+    this.handleShipModalCancel();
+  }
+
+  handleShipModalCancel = () => {
+    this.setState({
+      recordOrder: undefined,
+      shipModalVisible: false,
+    });
+  }
+
+  handlePayClick = (record) => {
+    this.setState({
+      recordOrder: record,
+      payModalVisible: true,
+    });
+    console.log("record", record);
+
+  }
+
+  handleShipClick = (record) => {
+    this.setState({
+      recordOrder: record,
+      shipModalVisible: true,
+    });
+  }
+
+  handleSignForClick = (record) => {
+    const { dispatch } = this.props;
+
+    const orderList = [record];
+    orderList[0].shipmentsTime = moment().format('YYYY-MM-DDTHH:mm:ss');
+    orderList[0].orderStatus = '已完成';
+    dispatch({
+      type: 'order/modifyOrderMaster',
+      payload: orderList,
+    });
+  }
+
+  handleReturnClick = (record) => {
+    const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'product/removeProduct',
+    //   payload: [record.id],
+    // });
+  }
+
   handleMenuClick = e => {
-    const { dispatch,form } = this.props;
+    const { dispatch, form } = this.props;
     const { selectedRows } = this.state;
 
     if (!selectedRows) return;
@@ -146,23 +286,23 @@ export default class TableList extends PureComponent {
             this.setState({
               selectedRows: [],
             });
-            if(response.success){
+            if (response.success) {
               message.success(response.message);
-            }else{
+            } else {
               message.error(response.message);
             }
             form.validateFields((err, fieldsValue) => {
               if (err) return;
-        
+
               const values = {
                 ...fieldsValue,
                 updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
               };
-        
+
               this.setState({
                 formValues: values,
               });
-        
+
               dispatch({
                 type: 'product/queryProduct',
                 payload: values,
@@ -179,7 +319,7 @@ export default class TableList extends PureComponent {
         //   }
         // });
 
-     
+
         break;
       }
       default:
@@ -255,7 +395,7 @@ export default class TableList extends PureComponent {
         </Row>
       </Form>
     );
-  }
+  };
 
   renderAdvancedForm() {
     const { form, categoryArray, brandArray, productStatusArray } = this.props;
@@ -317,65 +457,55 @@ export default class TableList extends PureComponent {
         </div>
       </Form>
     );
-  }
+  };
 
   renderForm() {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
-  }
+  };
 
   render() {
     const {
       order: { data },
-      productStatusArray,
+      payMethodArray,
       loading,
     } = this.props;
-    const { selectedRows } = this.state;
+    const {
+      selectedRows,
+      payModalVisible,
+      shipModalVisible,
+    } = this.state;
 
     console.log("manage render props", this.props);
     const columns = [
       {
-        title: '产品名称',
-        dataIndex: 'name',
-        fixed: 'left',
-        width: 100,
-        key: 'id',
+        title: '订单编号',
+        dataIndex: 'orderSn',
+        key: 'orderSn',
       },
       {
-        title: '商品条形码',
-        dataIndex: 'barCode',
+        title: '订单状态',
+        dataIndex: 'orderStatus',
       },
       {
-        title: '产品类别',
-        dataIndex: 'categoryName',
+        title: '订单所属用户',
+        dataIndex: 'userLogin.userAccount',
       },
       {
-        title: '品牌',
-        dataIndex: 'brandName',
+        title: '收货人',
+        dataIndex: 'shippingAddress.consignee',
       },
       {
-        title: '商品描述',
-        dataIndex: 'description',
+        title: '快递单号',
+        dataIndex: 'shippingSn',
       },
       {
-        title: '商品图片',
-        dataIndex: 'description',
+        title: '订单金额',
+        dataIndex: 'orderMoney',
       },
       {
-        title: '平均成本',
-        dataIndex: 'averageCost',
-      },
-      {
-        title: '产品售价',
-        dataIndex: 'price',
-      },
-      {
-        title: '产品保固期',
-        dataIndex: 'shelfLife',
-      },
-      {
-        title: '更新时间',
-        dataIndex: 'modifyTime',
+        title: '创建时间',
+        dataIndex: 'createTime',
         sorter: true,
         render(val) {
           return val ? <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span> : {};
@@ -383,16 +513,20 @@ export default class TableList extends PureComponent {
       },
       {
         title: '操作',
-        fixed: 'right',
-        render: (record) => (
-          <Fragment>
-            <a href="">修改</a>
-            <Divider type="vertical" />
-            <Popconfirm title="你确定要删掉该商品吗?" onConfirm={() => this.handleRemoveClick(record)} okText="确认" cancelText="取消">
-              <a>删除</a>
-            </Popconfirm>
-          </Fragment>
-        ),
+        render: (record) => {
+          return (
+            <Fragment>
+              {record.orderStatus === '待支付' ? <a onClick={() => this.handlePayClick(record)}>支付</a> : null}
+              {record.orderStatus === "待发货" ? <a onClick={() => this.handleShipClick(record)}>发货</a> : null}
+              {record.orderStatus === '待收货' ?
+                (
+                  <Popconfirm title="你确定吗?" onConfirm={() => this.handleSignForClick(record)} okText="确认" cancelText="取消">
+                    <a>签收</a>
+                  </Popconfirm>
+                ) : null}
+            </Fragment>
+          )
+        },
       },
     ];
 
@@ -415,7 +549,7 @@ export default class TableList extends PureComponent {
                 onClick={() => {
                   const { dispatch } = this.props;
                   dispatch(
-                    routerRedux.push({ pathname: '/product/add' })
+                    routerRedux.push({ pathname: '/order/add' })
                   );
                 }}
               >
@@ -436,14 +570,24 @@ export default class TableList extends PureComponent {
               selectedRows={selectedRows}
               loading={loading}
               data={data}
-              scroll={{ x: 1000}}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>
+        <CreatePayForm
+          payModalVisible={payModalVisible}
+          handlePayModalOk={this.handlePayModalOk}
+          handlePayModalCancel={this.handlePayModalCancel}
+          payMethodArray={payMethodArray}
+        />
+        <CreateShipForm
+          shipModalVisible={shipModalVisible}
+          handleShipModalOk={this.handleShipModalOk}
+          handleShipModalCancel={this.handleShipModalCancel}
+        />
       </PageHeaderLayout>
     );
-  }
-}
+  };
+};

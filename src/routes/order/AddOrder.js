@@ -152,15 +152,15 @@ export default class AdvancedForm extends PureComponent {
     this.handleModalVisible(true);
   }
 
-  handleOrderDetailChange=(e)=>{
+  handleOrderDetailChange = (e) => {
     const { dispatch } = this.props;
-    const newOrder={
-      orderDetailList:e,
-      orderMoney:0,
+    const newOrder = {
+      orderDetailList: e,
+      orderMoney: 0,
     }
 
-    e.map(item=>{
-      newOrder.orderMoney+=((item.orderProductNumber||1)*item.orderProductPrice)
+    e.map(item => {
+      newOrder.orderMoney += ((item.orderProductNumber || 1) * item.orderProductPrice)
     });
 
     dispatch({
@@ -190,24 +190,24 @@ export default class AdvancedForm extends PureComponent {
 
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
 
-    console.log("render this.props",this.props);
+    console.log("render this.props", this.props);
 
     const validate = () => {
       validateFieldsAndScroll((error, values) => {
         if (!error) {
-          console.log("values",{
+          console.log("values", {
             ...newOrder,
-            shippingAddressId:values.shippingAddressId,
-            payMethod:values.payMethod,
-            userId:values.userId,
+            shippingAddressId: values.shippingAddressId,
+            payMethod: values.payMethod,
+            userId: values.userId,
           });
           dispatch({
-            type:'order/createOrder',
-            payload:{
+            type: 'order/createOrder',
+            payload: {
               ...newOrder,
-              shippingAddressId:values.shippingAddressId,
-              payMethod:values.payMethod,
-              userId:values.userId,
+              shippingAddressId: values.shippingAddressId,
+              payMethod: values.payMethod,
+              userId: values.userId,
             },
           });
         }
@@ -271,43 +271,26 @@ export default class AdvancedForm extends PureComponent {
         />
         <Card title="订单基础信息" className={styles.card} bordered={false}>
           <Form layout="vertical" hideRequiredMark>
-            <Row gutter={16}>
-              <Col lg={6} md={12} sm={24}>
-                <Form.Item label={orderMasterInfo.user}>
-                  {getFieldDecorator('userId', {
-                    rules: [{ required: true, message: '请输入' }],
-                  })(
-                    <Select placeholder="请选择">
-                      {userArray.map(user => <Option key={user.id}>{user.userName}</Option>)}
-                    </Select>
-                  )}
-                </Form.Item>
-              </Col>
-              <Col xl={{ span: 6, offset: 2 }} lg={{ span: 8 }} md={{ span: 12 }} sm={24}>
-                <Form.Item label={orderMasterInfo.payMethod}>
-                  {getFieldDecorator('payMethod', {
-                    rules: [{ required: true, message: '请选择' }],
-                  })(
-                    <Select placeholder="请选择">
-                      {payMethodArray.map(payMethod => <Option key={payMethod.value}>{payMethod.labelZhCn}</Option>)}
-                    </Select>
-                  )}
-                </Form.Item>
-              </Col>
-              <Col xl={{ span: 8, offset: 2 }} lg={{ span: 10 }} md={{ span: 24 }} sm={24}>
-                <Form.Item label={orderMasterInfo.shippingAddress}>
-                  {getFieldDecorator('shippingAddressId', {
-                    initialValue: shippingAddress ? shippingAddress.id : '',
-                    rules: [{ required: true, message: '请选择收货地址' }],
-                  })(
-                    <Input.Search
-                      placeholder="点击右侧按钮选择收货地址"
-                      onSearch={(value) => this.handleQueryShippinAddress(value)}
-                    />
-                  )}
-                </Form.Item>
-              </Col>
-            </Row>
+            <Form.Item label={orderMasterInfo.user}>
+              {getFieldDecorator('userId', {
+                rules: [{ required: true, message: '请输入' }],
+              })(
+                <Select placeholder="请选择">
+                  {userArray.map(user => <Option key={user.id}>{user.userName}</Option>)}
+                </Select>
+              )}
+            </Form.Item>
+            <Form.Item label={orderMasterInfo.shippingAddress}>
+              {getFieldDecorator('shippingAddressId', {
+                initialValue: shippingAddress ? shippingAddress.id : '',
+                rules: [{ required: true, message: '请选择收货地址' }],
+              })(
+                <Input.Search
+                  placeholder="点击右侧按钮选择收货地址"
+                  onSearch={(value) => this.handleQueryShippinAddress(value)}
+                />
+              )}
+            </Form.Item>
             <Row gutter={16}>
               <Col lg={6} md={12} sm={24}>
                 <Form.Item label={orderMasterInfo.shippingAddressName}>
@@ -346,12 +329,12 @@ export default class AdvancedForm extends PureComponent {
         <Card title="订单商品" bordered={false}>
           {getFieldDecorator('members', {
             initialValue: newOrder.orderDetailList,
-          })(<TableForm onChange={(e)=>{this.handleOrderDetailChange(e)}} />)}
+          })(<TableForm onChange={(e) => { this.handleOrderDetailChange(e) }} />)}
         </Card>
         <FooterToolbar>
           <span>订单总价：</span>
           <Icon type="money-collect" theme="twoTone" twoToneColor="#e06c75" />
-          <span>{newOrder.orderMoney||''}</span>
+          <span>{newOrder.orderMoney || ''}</span>
           <Divider type="vertical" />
           {getErrorInfo()}
           <Button type="primary" onClick={validate} loading={submitting}>

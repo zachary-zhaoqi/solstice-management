@@ -3,7 +3,7 @@ import { isUrl } from '../utils/utils';
 const menuData = [
   {
     name: '商品管理',
-    icon: 'table',
+    icon: 'coffee',
     path: 'product',
     children: [
       {
@@ -20,7 +20,7 @@ const menuData = [
   },
   {
     name: '库存管理',
-    icon: 'table',
+    icon: 'gold',
     path: 'inventory',
     children: [
       {
@@ -37,7 +37,7 @@ const menuData = [
   },
   {
     name: '订单管理',
-    icon: 'table',
+    icon: 'profile',
     path: 'order',
     children: [
       {
@@ -54,7 +54,7 @@ const menuData = [
   },
   {
     name: '购买',
-    icon: 'table',
+    icon: 'shop',
     path: 'menu',
     children: [
       {

@@ -155,3 +155,10 @@ export async function createOrder(params) {
 export async function queryOrder(params){
   return request(`/order/orderMaster?${stringify(params)}`)
 }
+
+export async function modifyOrderMaster(params) {
+  return request(`/order/orderMaster`, {
+    method: 'PUT',
+    body: params,
+  });
+}

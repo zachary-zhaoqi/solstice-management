@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { createOrder, queryProduct,queryOrder,removeProduct } from '../services/api';
+import { createOrder, queryProduct,queryOrder,modifyOrderMaster } from '../services/api';
 
 export default {
   namespace: 'order',
@@ -44,7 +44,15 @@ export default {
         payload: response.data || [],
       });
     },
-
+    *modifyOrderMaster({payload},{call}){
+      const response = yield call(modifyOrderMaster, payload);
+      if (response.code === 10000) {
+        message.success(response.message);
+        // dispatch 更新查询方法
+      } else {
+        message.error(response.message);
+      }
+    }
   },
 
   reducers: {

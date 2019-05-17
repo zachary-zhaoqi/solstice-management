@@ -48,7 +48,6 @@ const menuData = [
       {
         name: '新建订单',
         path: 'add',
-        authority: 'admin',
       },
     ],
   },

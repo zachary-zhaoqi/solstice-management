@@ -162,3 +162,26 @@ export async function modifyOrderMaster(params) {
     body: params,
   });
 }
+
+export async function sendCaptcha(params) {
+  return request(`/userlogin/userLogin/captcha`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function register(params) {
+  return request(`/userlogin/userLogin`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function registerInfo(params) {
+  return request(`/userlogin/userLogin/info`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+

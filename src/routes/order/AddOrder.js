@@ -105,20 +105,16 @@ export default class AdvancedForm extends PureComponent {
     }
 
     dispatch({
+      type: 'user/queryUserArray',
+      payload: {},
+    });
+
+    dispatch({
       type: 'dictionary/getDataDictionary',
       payload: { key: 'payMethod' },
     });
 
     console.log("location.params", location.params);
-  }
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-
-    dispatch({
-      type: 'user/queryUserArray',
-      payload: {},
-    });
   }
 
   handleSetShippingAddress = (selectedRowKeys, selectedRows) => {
@@ -175,9 +171,6 @@ export default class AdvancedForm extends PureComponent {
       order: { newOrder },
       submitting,
       user: { userArray },
-      dictionary: {
-        payMethodArray,
-      },
       dispatch,
     } = this.props;
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { routerRedux, Link } from 'dva/router';
-import { Form, Input, Button, Select, Row, Col, Popover, Progress } from 'antd';
+import { Form, Input, Button, Select, Row, Col, Popover, Progress,Message } from 'antd';
 import styles from './Register.less';
 
 const FormItem = Form.Item;
@@ -55,19 +55,37 @@ export default class Register extends Component {
 
   onGetCaptcha = () => {
     let count = 59;
-    this.setState({ count });
-    this.interval = setInterval(() => {
-      count -= 1;
-      this.setState({ count });
-      if (count === 0) {
-        clearInterval(this.interval);
+    const { form, dispatch } = this.props;
+    const value = form.getFieldValue('userPhone');
+    form.validateFields(['userPhone'], { force: true }, (err, values) => {
+      if (!err) {
+        dispatch({
+          type: 'register/sendCaptcha',
+          payload: {
+            userPhone: value,
+          },
+          callback: (response) => {
+            if (response.code === 10000) {
+              this.setState({ count });
+              this.interval = setInterval(() => {
+                count -= 1;
+                this.setState({ count });
+                if (count === 0) {
+                  clearInterval(this.interval);
+                }
+              }, 1000);
+            } else {
+              Message.error(response.message);
+            }
+          },
+        });
       }
-    }, 1000);
+    });
   };
 
   getPasswordStatus = () => {
     const { form } = this.props;
-    const value = form.getFieldValue('password');
+    const value = form.getFieldValue('userPassword');
     if (value && value.length > 9) {
       return 'ok';
     }
@@ -89,6 +107,17 @@ export default class Register extends Component {
             ...values,
             prefix,
           },
+          callback: (response) => {
+            if (response.code === 10000) {
+              Message.success(response.message);
+              dispatch(routerRedux.push({
+                pathname: '/user/info',
+                params: response.data,
+              }));
+            } else {
+              Message.error(response.message);
+            }
+          },
         });
       }
     });
@@ -102,7 +131,7 @@ export default class Register extends Component {
 
   checkConfirm = (rule, value, callback) => {
     const { form } = this.props;
-    if (value && value !== form.getFieldValue('password')) {
+    if (value && value !== form.getFieldValue('userPassword')) {
       callback('两次输入的密码不匹配!');
     } else {
       callback();
@@ -146,7 +175,7 @@ export default class Register extends Component {
 
   renderPasswordProgress = () => {
     const { form } = this.props;
-    const value = form.getFieldValue('password');
+    const value = form.getFieldValue('userPassword');
     const passwordStatus = this.getPasswordStatus();
     return value && value.length ? (
       <div className={styles[`progress-${passwordStatus}`]}>
@@ -170,12 +199,18 @@ export default class Register extends Component {
         <h3>注册</h3>
         <Form onSubmit={this.handleSubmit}>
           <FormItem>
-            {getFieldDecorator('mail', {
+            {getFieldDecorator('userAccount', {
               rules: [
                 {
                   required: true,
-                  message: '请输入邮箱地址！',
+                  message: '请输入账户！',
                 },
+              ],
+            })(<Input size="large" placeholder="账户" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('userEmail', {
+              rules: [
                 {
                   type: 'email',
                   message: '邮箱地址格式错误！',
@@ -198,7 +233,7 @@ export default class Register extends Component {
               placement="right"
               visible={visible}
             >
-              {getFieldDecorator('password', {
+              {getFieldDecorator('userPassword', {
                 rules: [
                   {
                     validator: this.checkPassword,
@@ -231,7 +266,7 @@ export default class Register extends Component {
                 <Option value="86">+86</Option>
                 <Option value="87">+87</Option>
               </Select>
-              {getFieldDecorator('mobile', {
+              {getFieldDecorator('userPhone', {
                 rules: [
                   {
                     required: true,

@@ -100,7 +100,7 @@ export const getRouterData = app => {
         import('../routes/order/Manage')),
     },
     '/order/add': {
-      component: dynamicWrapper(app, ['dictionary', 'product','order'], () =>
+      component: dynamicWrapper(app, ['dictionary','user', 'product','order'], () =>
         import('../routes/order/AddOrder')),
     },
     '/menu/productMenu': {
@@ -199,6 +199,9 @@ export const getRouterData = app => {
     },
     '/user/register': {
       component: dynamicWrapper(app, ['register'], () => import('../routes/User/Register')),
+    },
+    '/user/info': {
+      component: dynamicWrapper(app, ['register'], () => import('../routes/User/Info')),
     },
     '/user/register-result': {
       component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),

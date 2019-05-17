@@ -30,7 +30,7 @@ export default {
       const response = yield call(queryUserInfo, payload);
       yield put({
         type: 'saveUserArray',
-        payload: response.data,
+        payload: response.data||[],
       });
     },
   },

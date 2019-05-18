@@ -129,6 +129,12 @@ export default class BasicLayout extends React.PureComponent {
       }
     }
 
+    if (token===""||token===undefined) {
+      dispatch(
+        routerRedux.push({ pathname: '/user/loglout' })
+      );
+    }
+    
     const jwt = require('jsonwebtoken');
     const decoded = jwt.decode(token, { complete: true });
 

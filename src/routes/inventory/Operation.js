@@ -62,9 +62,13 @@ const CreateForm = Form.create()(props => {
   }
 
   const onNEWinventory = () => {
-    onNewInventory({
-      "productId": inventoryInfoArrayModal[0].productId || inventoryInfoArrayModal[0].id,
-    })
+    if (inventoryInfoArrayModal.length > 0) {
+      onNewInventory({
+        "productId": inventoryInfoArrayModal[0].productId || inventoryInfoArrayModal[0].id,
+      })
+    }else{
+      message.error("请先绑定商品！");
+    }
   }
 
   const ChooseProductTooltip = () => {
@@ -103,6 +107,11 @@ const CreateForm = Form.create()(props => {
         </Tooltip>
         <br />
         <ChooseProductTooltip />
+        <br />
+        <Button onClick={onNEWinventory}>
+          <Icon type="plus" />
+          新建一个库存批次
+        </Button>
       </Card>
 
       <br />
@@ -210,12 +219,22 @@ export default class TableList extends PureComponent {
 
   onNewInventory = (params) => {
     console.log("laskfjd;sdlfj", params);
-    const { dispatch } = this.props;
+    const { dispatch, inventoryInfoArrayModal } = this.props;
+    if (inventoryInfoArrayModal.length > 0) {
 
-    dispatch({
-      type: 'inventory/newInventoryInfo',
-      payload: params,
-    });
+      dispatch({
+        type: 'inventory/newInventoryInfo',
+        payload: params,
+      });
+
+      dispatch({
+        type: 'inventory/queryinventoryInfoArrayModal',
+        payload: inventoryInfoArrayModal[0].productName,
+      });
+    }else{
+      message.error("请先绑定商品！");
+    }
+
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {

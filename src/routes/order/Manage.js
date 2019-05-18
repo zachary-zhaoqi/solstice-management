@@ -528,13 +528,6 @@ export default class TableList extends PureComponent {
       },
     ];
 
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量上架</Menu.Item>
-      </Menu>
-    );
-
     return (
       <PageHeaderLayout title="订单管理">
         <Card bordered={false}>
@@ -553,16 +546,6 @@ export default class TableList extends PureComponent {
               >
                 新建
               </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量下架</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
             </div>
             <StandardTable
               selectedRows={selectedRows}

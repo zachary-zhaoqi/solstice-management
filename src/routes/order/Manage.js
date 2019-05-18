@@ -218,7 +218,7 @@ export default class TableList extends PureComponent {
     recordOrder.shippingSn = values.shippingSn;
     recordOrder.shipmentsTime = moment().format('YYYY-MM-DDTHH:mm:ss');
 
-    recordOrder.orderStatus = '待签收';
+    recordOrder.orderStatus = '待收货';
     const orderList = [recordOrder];
     dispatch({
       type: 'order/modifyOrderMaster',
@@ -318,8 +318,6 @@ export default class TableList extends PureComponent {
         //     message.error('修改失败')
         //   }
         // });
-
-
         break;
       }
       default:

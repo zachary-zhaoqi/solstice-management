@@ -178,15 +178,6 @@ export default class TableList extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="产品包装规格">
-              {getFieldDecorator('specification')(
-                <Select placeholder="请选择">
-                  {specificationArray.map(specification => <Option key={specification.value}>{specification.labelZhCn}</Option>)}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
@@ -218,15 +209,6 @@ export default class TableList extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="条形码号">
               {getFieldDecorator('barCode')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="产品包装规格">
-              {getFieldDecorator('specification')(
-                <Select placeholder="请选择">
-                  {specificationArray.map(specification => <Option key={specification.value}>{specification.labelZhCn}</Option>)}
-                </Select>
-              )}
             </FormItem>
           </Col>
         </Row>
@@ -309,10 +291,6 @@ export default class TableList extends PureComponent {
       {
         title: '品牌',
         dataIndex: 'brandName',
-      },
-      {
-        title: '产品包装规格',
-        dataIndex: 'specification',
       },
       {
         title: '最后修改时间',

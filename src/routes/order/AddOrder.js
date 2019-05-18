@@ -269,7 +269,7 @@ export default class AdvancedForm extends PureComponent {
                 rules: [{ required: true, message: '请输入' }],
               })(
                 <Select placeholder="请选择">
-                  {userArray.map(user => <Option key={user.id}>{user.userName}</Option>)}
+                  {userArray.map(user => <Option key={user.userId}>{user.userName}</Option>)}
                 </Select>
               )}
             </Form.Item>

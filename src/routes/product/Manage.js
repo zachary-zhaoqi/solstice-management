@@ -64,12 +64,12 @@ export default class TableList extends PureComponent {
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{ key: 'category', tree: true },
+      payload: { key: 'category', tree: true },
     });
 
     dispatch({
       type: 'dictionary/getDataDictionary',
-      payload:{key:'productStatus'},
+      payload: { key: 'productStatus' },
     });
   }
 
@@ -128,15 +128,42 @@ export default class TableList extends PureComponent {
   };
 
   handleRemoveClick = (record) => {
-    const { dispatch } = this.props;
+    const { dispatch,form } = this.props;
+
     dispatch({
       type: 'product/removeProduct',
       payload: [record.id],
+      callback: (response) => {
+        this.setState({
+          selectedRows: [],
+        });
+        if (response.success) {
+          message.success(response.message);
+        } else {
+          message.error(response.message);
+        }
+        form.validateFields((err, fieldsValue) => {
+          if (err) return;
+          const values = {
+            ...fieldsValue,
+            updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+          };
+
+          this.setState({
+            formValues: values,
+          });
+
+          dispatch({
+            type: 'product/queryProduct',
+            payload: values,
+          });
+        });
+      },
     });
   }
 
   handleMenuClick = e => {
-    const { dispatch,form } = this.props;
+    const { dispatch, form } = this.props;
     const { selectedRows } = this.state;
 
     if (!selectedRows) return;
@@ -151,23 +178,23 @@ export default class TableList extends PureComponent {
             this.setState({
               selectedRows: [],
             });
-            if(response.success){
+            if (response.success) {
               message.success(response.message);
-            }else{
+            } else {
               message.error(response.message);
             }
             form.validateFields((err, fieldsValue) => {
               if (err) return;
-        
+
               const values = {
                 ...fieldsValue,
                 updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
               };
-        
+
               this.setState({
                 formValues: values,
               });
-        
+
               dispatch({
                 type: 'product/queryProduct',
                 payload: values,
@@ -184,19 +211,19 @@ export default class TableList extends PureComponent {
         //   }
         // });
 
-     
+
         break;
       }
       default:
         break;
     }
-  };
+  }
 
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
     });
-  };
+  }
 
   handleSearch = e => {
     e.preventDefault();
@@ -220,7 +247,7 @@ export default class TableList extends PureComponent {
         payload: values,
       });
     });
-  };
+  }
 
   renderSimpleForm() {
     const { form, categoryArray } = this.props;
@@ -465,7 +492,7 @@ export default class TableList extends PureComponent {
               selectedRows={selectedRows}
               loading={loading}
               data={data}
-              scroll={{ x: 1000}}
+              scroll={{ x: 1500 }}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

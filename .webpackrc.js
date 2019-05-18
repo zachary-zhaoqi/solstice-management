@@ -35,7 +35,7 @@ export default {
     },
     '/': {
       target: 'http://zhaoqi.cc:8081',
-      // target: 'http://localhost:8080',
+      // target: 'http://localhost:8081',
       // target:'http://192.168.43.98:8080',
       changeOrigin: true,
       pathRewrite: { '^/': '/' },

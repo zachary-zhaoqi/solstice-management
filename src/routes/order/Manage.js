@@ -349,7 +349,7 @@ export default class TableList extends PureComponent {
       });
 
       dispatch({
-        type: 'product/queryProduct',
+        type: 'order/queryOrder',
         payload: values,
       });
     });

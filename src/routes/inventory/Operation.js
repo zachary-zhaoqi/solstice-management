@@ -71,8 +71,6 @@ const CreateForm = Form.create()(props => {
     }
   }
 
-  console.log(inventoryInfoArrayModal);
-
   const ChooseProductTooltip = () => {
     if (inventoryInfoArrayModal.length > 0) {
       return <Badge status='success' text={`已查询商品${inventoryInfoArrayModal[0].productName || inventoryInfoArrayModal[0].name}相关库存`} />
@@ -228,7 +226,7 @@ export default class TableList extends PureComponent {
         type: 'inventory/newInventoryInfo',
         payload: params,
       });
-      console.log("onNewInventory queryinventoryInfoArrayModal",inventoryInfoArrayModal);
+      // console.log("onNewInventory queryinventoryInfoArrayModal",inventoryInfoArrayModal);
       dispatch({
         type: 'inventory/queryinventoryInfoArrayModal',
         payload: {name:inventoryInfoArrayModal[0].productName || inventoryInfoArrayModal[0].name},

@@ -131,7 +131,7 @@ export default class BasicLayout extends React.PureComponent {
 
     if (token===""||token===undefined) {
       dispatch(
-        routerRedux.push({ pathname: '/user/loglout' })
+        routerRedux.push({ pathname: '/user/login' })
       );
     }
     
